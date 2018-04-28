@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
-using System.Threading.Tasks;
-using HtmlAgilityPack;
+using KW_Tools;
 
 namespace KWReader
 {
@@ -11,16 +10,14 @@ namespace KWReader
     {
         static void Main(string[] args)
         {
-            var path = @"c:\ZA1B-00021992-8.html";
 
-            var doc = new HtmlDocument();
+            StreamReader htmlFile = new StreamReader(new FileStream(@"c:\LU1A-00001473-3.html", FileMode.Open), Encoding.UTF8);
 
-            doc.Load(path);
+            KwFromHtml kw = new KwFromHtml(htmlFile.ReadToEnd());
 
-            var htmlBody = doc.DocumentNode.SelectNodes("//table//tr//td");
+            Dictionary<string, string> miejscowosc = kw.GetMiejscowosc();
 
-            
-
+            Console.ReadKey();
 
         }
     }
