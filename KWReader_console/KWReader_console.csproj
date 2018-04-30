@@ -43,6 +43,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\EPPlus\EPPlus\EPPlus.csproj">
+      <Project>{be4a6343-f411-44a3-8d6f-f40747ed7ba5}</Project>
+      <Name>EPPlus</Name>
+    </ProjectReference>
     <ProjectReference Include="..\KW_Tools\KW_Tools.csproj">
       <Project>{5f4ba865-facf-4897-80d7-39f4146af6a7}</Project>
       <Name>KW_Tools</Name>
