@@ -1,4 +1,6 @@
-﻿namespace KW_Tools
+﻿using System.Collections.Generic;
+
+namespace KW_Tools
 {
     public class Dzialka
     {
@@ -6,8 +8,10 @@
         public string NumerDzialki;
         public string NumerObrebuEwidencyjnego;
         public string NazwaObrebuEwidencyjnego;
-        public string Polozenie;
-        public string Ulica;
+        public List<string> PolozenieList = new List<string>();
+        public bool PolozenieMulti;
+        public List<string> UliceList = new List<string>();
+        public bool UlicaMulti;
         public string SposobKorzystania;
     }
 }

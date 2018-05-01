@@ -38,11 +38,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Budynek.cs" />
     <Compile Include="Dzialka.cs" />
     <Compile Include="InformacjePodstawowe.cs" />
     <Compile Include="KWFromHTML.cs" />
     <Compile Include="Polozenie.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ZamkniecieKsiegi.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
