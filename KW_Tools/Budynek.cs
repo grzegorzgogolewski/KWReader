@@ -1,11 +1,17 @@
 ﻿using System.Collections.Generic;
 
 namespace KW_Tools
-{
+{   
+    /// <summary>
+    /// Klasa dla atrybutów budynku pozyskanego z KW
+    /// </summary>
     public class Budynek
     {
         public string IdentyfikatorBudynku;
         public string IdentyfikatorDzialki;
+        /// <summary>
+        /// Położenie może być listą atrybutów
+        /// </summary>
         public List<string> PolozenieList = new List<string>();
         public bool PolozenieMulti;
         public string NazwaUlicy;
