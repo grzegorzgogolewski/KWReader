@@ -507,7 +507,9 @@ namespace KW_Tools
                                             KwLog.Add("kwDzialka.IdentyfikatorBudynku:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
                                         }
                                         break;
-
+                                    
+                                    //TODO: Identyfikator może być wielokrotny. Należy zamienić go na listę obiektów
+                                    
                                     case "2. Identyfikator działki":
                                         if (cells.Count == 2) // testowanie ilości komórek w wierszu
                                         {
