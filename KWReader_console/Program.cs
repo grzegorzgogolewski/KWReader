@@ -49,17 +49,18 @@ namespace KWReader
             xlsSheetDzialki.Cells[1, 4].Value = "PolozenieMulti";
             xlsSheetDzialki.Cells[1, 5].Value = "Gmina";
             xlsSheetDzialki.Cells[1, 6].Value = "Miejscowosc";
+            xlsSheetDzialki.Cells[1, 7].Value = "Dzielnica";
 
-            xlsSheetDzialki.Cells[1, 7].Value = "IdDzialki";
-            xlsSheetDzialki.Cells[1, 8].Value = "NumerDzialki";
-            xlsSheetDzialki.Cells[1, 9].Value = "NumerObrebuEwid";
-            xlsSheetDzialki.Cells[1, 10].Value = "NazwaObrebuEwid";
-            xlsSheetDzialki.Cells[1, 11].Value = "UlicaMulti";
-            xlsSheetDzialki.Cells[1, 12].Value = "Ulica";
-            xlsSheetDzialki.Cells[1, 13].Value = "SposobKorzystania";
+            xlsSheetDzialki.Cells[1, 8].Value = "IdDzialki";
+            xlsSheetDzialki.Cells[1, 9].Value = "NumerDzialki";
+            xlsSheetDzialki.Cells[1, 10].Value = "NumerObrebuEwid";
+            xlsSheetDzialki.Cells[1, 11].Value = "NazwaObrebuEwid";
+            xlsSheetDzialki.Cells[1, 12].Value = "UlicaMulti";
+            xlsSheetDzialki.Cells[1, 13].Value = "Ulica";
+            xlsSheetDzialki.Cells[1, 14].Value = "SposobKorzystania";
 
-            xlsSheetDzialki.Cells[1, 14].Value = "LiczbaDZwKW";
-            xlsSheetDzialki.Cells[1, 15].Value = "PowObszaru";
+            xlsSheetDzialki.Cells[1, 15].Value = "LiczbaDZwKW";
+            xlsSheetDzialki.Cells[1, 16].Value = "PowObszaru";
 
             ExcelWorksheet xlsSheetBudynki = xlsWorkbook.Workbook.Worksheets.Add("Budynki");
 
@@ -70,19 +71,20 @@ namespace KWReader
             xlsSheetBudynki.Cells[1, 4].Value = "PolozenieMulti";
             xlsSheetBudynki.Cells[1, 5].Value = "Gmina";
             xlsSheetBudynki.Cells[1, 6].Value = "Miejscowosc";
+            xlsSheetBudynki.Cells[1, 7].Value = "Dzielnica";
 
-            xlsSheetBudynki.Cells[1, 7].Value = "IdBudynku";
-            xlsSheetBudynki.Cells[1, 8].Value = "IdDzialkiMulti";
-            xlsSheetBudynki.Cells[1, 9].Value = "IdDzialki";
-            xlsSheetBudynki.Cells[1, 10].Value = "NazwaUlicy";
-            xlsSheetBudynki.Cells[1, 11].Value = "NumerPorzadkowy";
-            xlsSheetBudynki.Cells[1, 12].Value = "LiczbaKondygnacji";
-            xlsSheetBudynki.Cells[1, 13].Value = "LiczbaLokali";
-            xlsSheetBudynki.Cells[1, 14].Value = "PowierzchniaUzytkowa";
-            xlsSheetBudynki.Cells[1, 15].Value = "Przeznaczenie";
-            xlsSheetBudynki.Cells[1, 16].Value = "DalszyOpis";
-            xlsSheetBudynki.Cells[1, 17].Value = "Nieruchomosc";
-            xlsSheetBudynki.Cells[1, 18].Value = "Odrebnosc";
+            xlsSheetBudynki.Cells[1, 8].Value = "IdBudynku";
+            xlsSheetBudynki.Cells[1, 9].Value = "IdDzialkiMulti";
+            xlsSheetBudynki.Cells[1, 10].Value = "IdDzialki";
+            xlsSheetBudynki.Cells[1, 11].Value = "NazwaUlicy";
+            xlsSheetBudynki.Cells[1, 12].Value = "NumerPorzadkowy";
+            xlsSheetBudynki.Cells[1, 13].Value = "LiczbaKondygnacji";
+            xlsSheetBudynki.Cells[1, 14].Value = "LiczbaLokali";
+            xlsSheetBudynki.Cells[1, 15].Value = "PowierzchniaUzytkowa";
+            xlsSheetBudynki.Cells[1, 16].Value = "Przeznaczenie";
+            xlsSheetBudynki.Cells[1, 17].Value = "DalszyOpis";
+            xlsSheetBudynki.Cells[1, 18].Value = "Nieruchomosc";
+            xlsSheetBudynki.Cells[1, 19].Value = "Odrebnosc";
 
             ExcelWorksheet xlsSheetLokale = xlsWorkbook.Workbook.Worksheets.Add("Lokale");
 
@@ -93,17 +95,18 @@ namespace KWReader
             xlsSheetLokale.Cells[1, 4].Value = "PolozenieMulti";
             xlsSheetLokale.Cells[1, 5].Value = "Gmina";
             xlsSheetLokale.Cells[1, 6].Value = "Miejscowosc";
+            xlsSheetLokale.Cells[1, 7].Value = "Dzielnica";
 
-            xlsSheetLokale.Cells[1, 7].Value = "IdLokalu";
-            xlsSheetLokale.Cells[1, 8].Value = "Ulica";
-            xlsSheetLokale.Cells[1, 9].Value = "NumerBudynku";
-            xlsSheetLokale.Cells[1, 10].Value = "NumerLokalu";
-            xlsSheetLokale.Cells[1, 11].Value = "PrzeznaczenieLokalu";
-            xlsSheetLokale.Cells[1, 12].Value = "OpisLokalu";
-            xlsSheetLokale.Cells[1, 13].Value = "OpisPomPrzyn";
-            xlsSheetLokale.Cells[1, 14].Value = "Kondygnacja";
-            xlsSheetLokale.Cells[1, 15].Value = "Nieruchomosc";
-            xlsSheetLokale.Cells[1, 16].Value = "Odrebnosc";
+            xlsSheetLokale.Cells[1, 8].Value = "IdLokalu";
+            xlsSheetLokale.Cells[1, 9].Value = "Ulica";
+            xlsSheetLokale.Cells[1, 10].Value = "NumerBudynku";
+            xlsSheetLokale.Cells[1, 11].Value = "NumerLokalu";
+            xlsSheetLokale.Cells[1, 12].Value = "PrzeznaczenieLokalu";
+            xlsSheetLokale.Cells[1, 13].Value = "OpisLokalu";
+            xlsSheetLokale.Cells[1, 14].Value = "OpisPomPrzyn";
+            xlsSheetLokale.Cells[1, 15].Value = "Kondygnacja";
+            xlsSheetLokale.Cells[1, 16].Value = "Nieruchomosc";
+            xlsSheetLokale.Cells[1, 17].Value = "Odrebnosc";
 
             string [] fileEntries = Directory.GetFiles(args[0], "*.html");
 
@@ -181,17 +184,18 @@ namespace KWReader
                     xlsSheetDzialki.Cells[dzialkaCounter, 4].Value = dzialka.PolozenieMulti;
                     xlsSheetDzialki.Cells[dzialkaCounter, 5].Value = kw.GetPolozenie(dzialka, PolozenieTyp.Gmina);
                     xlsSheetDzialki.Cells[dzialkaCounter, 6].Value = kw.GetPolozenie(dzialka, PolozenieTyp.Miejscowosc);
+                    xlsSheetDzialki.Cells[dzialkaCounter, 7].Value = kw.GetPolozenie(dzialka, PolozenieTyp.Dzielnica);
 
-                    xlsSheetDzialki.Cells[dzialkaCounter, 7].Value = dzialka.IdentyfikatorDzialki;
-                    xlsSheetDzialki.Cells[dzialkaCounter, 8].Value = dzialka.NumerDzialki;
-                    xlsSheetDzialki.Cells[dzialkaCounter, 9].Value = dzialka.NumerObrebuEwidencyjnego;
-                    xlsSheetDzialki.Cells[dzialkaCounter, 10].Value = dzialka.NazwaObrebuEwidencyjnego;
-                    xlsSheetDzialki.Cells[dzialkaCounter, 11].Value = dzialka.UlicaMulti;
-                    xlsSheetDzialki.Cells[dzialkaCounter, 12].Value = kw.GetUlicaForDzialka(dzialka);
-                    xlsSheetDzialki.Cells[dzialkaCounter, 13].Value = dzialka.SposobKorzystania;
+                    xlsSheetDzialki.Cells[dzialkaCounter, 8].Value = dzialka.IdentyfikatorDzialki;
+                    xlsSheetDzialki.Cells[dzialkaCounter, 9].Value = dzialka.NumerDzialki;
+                    xlsSheetDzialki.Cells[dzialkaCounter, 10].Value = dzialka.NumerObrebuEwidencyjnego;
+                    xlsSheetDzialki.Cells[dzialkaCounter, 11].Value = dzialka.NazwaObrebuEwidencyjnego;
+                    xlsSheetDzialki.Cells[dzialkaCounter, 12].Value = dzialka.UlicaMulti;
+                    xlsSheetDzialki.Cells[dzialkaCounter, 13].Value = kw.GetUlicaForDzialka(dzialka);
+                    xlsSheetDzialki.Cells[dzialkaCounter, 14].Value = dzialka.SposobKorzystania;
 
-                    xlsSheetDzialki.Cells[dzialkaCounter, 14].Value = kw.KwDzialkaList.Count;
-                    xlsSheetDzialki.Cells[dzialkaCounter, 15].Value = kw.KwObszar.ObszarHa;
+                    xlsSheetDzialki.Cells[dzialkaCounter, 15].Value = kw.KwDzialkaList.Count;
+                    xlsSheetDzialki.Cells[dzialkaCounter, 16].Value = kw.KwObszar.ObszarHa;
 
                     dzialkaCounter++;
 
@@ -206,19 +210,20 @@ namespace KWReader
                     xlsSheetBudynki.Cells[budynekCounter, 4].Value = budynek.PolozenieMulti;
                     xlsSheetBudynki.Cells[budynekCounter, 5].Value = kw.GetPolozenie(budynek, PolozenieTyp.Gmina);
                     xlsSheetBudynki.Cells[budynekCounter, 6].Value = kw.GetPolozenie(budynek, PolozenieTyp.Miejscowosc);
+                    xlsSheetBudynki.Cells[budynekCounter, 7].Value = kw.GetPolozenie(budynek, PolozenieTyp.Dzielnica);
 
-                    xlsSheetBudynki.Cells[budynekCounter, 7].Value = budynek.IdentyfikatorBudynku;
-                    xlsSheetBudynki.Cells[budynekCounter, 8].Value = budynek.IdentyfikatorDzialkiMulti;
-                    xlsSheetBudynki.Cells[budynekCounter, 9].Value = kw.GetIdentyfikatorDzialkiForBudynek(budynek);
-                    xlsSheetBudynki.Cells[budynekCounter, 10].Value = budynek.NazwaUlicy;
-                    xlsSheetBudynki.Cells[budynekCounter, 11].Value = budynek.NumerPorzadkowy;
-                    xlsSheetBudynki.Cells[budynekCounter, 12].Value = budynek.LiczbaKondygnacji;
-                    xlsSheetBudynki.Cells[budynekCounter, 13].Value = budynek.LiczbaLokali;
-                    xlsSheetBudynki.Cells[budynekCounter, 14].Value = budynek.PowierzchniaUzytkowa;
-                    xlsSheetBudynki.Cells[budynekCounter, 15].Value = budynek.Przeznaczenie;
-                    xlsSheetBudynki.Cells[budynekCounter, 16].Value = budynek.DalszyOpis;
-                    xlsSheetBudynki.Cells[budynekCounter, 17].Value = budynek.Nieruchomosc;
-                    xlsSheetBudynki.Cells[budynekCounter, 18].Value = budynek.Odrebnosc;
+                    xlsSheetBudynki.Cells[budynekCounter, 8].Value = budynek.IdentyfikatorBudynku;
+                    xlsSheetBudynki.Cells[budynekCounter, 9].Value = budynek.IdentyfikatorDzialkiMulti;
+                    xlsSheetBudynki.Cells[budynekCounter, 10].Value = kw.GetIdentyfikatorDzialkiForBudynek(budynek);
+                    xlsSheetBudynki.Cells[budynekCounter, 11].Value = budynek.NazwaUlicy;
+                    xlsSheetBudynki.Cells[budynekCounter, 12].Value = budynek.NumerPorzadkowy;
+                    xlsSheetBudynki.Cells[budynekCounter, 13].Value = budynek.LiczbaKondygnacji;
+                    xlsSheetBudynki.Cells[budynekCounter, 14].Value = budynek.LiczbaLokali;
+                    xlsSheetBudynki.Cells[budynekCounter, 15].Value = budynek.PowierzchniaUzytkowa;
+                    xlsSheetBudynki.Cells[budynekCounter, 16].Value = budynek.Przeznaczenie;
+                    xlsSheetBudynki.Cells[budynekCounter, 17].Value = budynek.DalszyOpis;
+                    xlsSheetBudynki.Cells[budynekCounter, 18].Value = budynek.Nieruchomosc;
+                    xlsSheetBudynki.Cells[budynekCounter, 19].Value = budynek.Odrebnosc;
 
                     budynekCounter++;
                 }
@@ -232,17 +237,18 @@ namespace KWReader
                     xlsSheetLokale.Cells[lokalCounter, 4].Value = lokal.PolozenieMulti;
                     xlsSheetLokale.Cells[lokalCounter, 5].Value = kw.GetPolozenie(lokal, PolozenieTyp.Gmina);
                     xlsSheetLokale.Cells[lokalCounter, 6].Value = kw.GetPolozenie(lokal, PolozenieTyp.Miejscowosc);
+                    xlsSheetLokale.Cells[lokalCounter, 7].Value = kw.GetPolozenie(lokal, PolozenieTyp.Dzielnica);
 
-                    xlsSheetLokale.Cells[lokalCounter, 7].Value = lokal.IdentyfikatorLokalu;
-                    xlsSheetLokale.Cells[lokalCounter, 8].Value = lokal.Ulica;
-                    xlsSheetLokale.Cells[lokalCounter, 9].Value = lokal.NumerBudynku;
-                    xlsSheetLokale.Cells[lokalCounter, 10].Value = lokal.NumerLokalu;
-                    xlsSheetLokale.Cells[lokalCounter, 11].Value = lokal.PrzeznaczenieLokalu;
-                    xlsSheetLokale.Cells[lokalCounter, 12].Value = lokal.OpisLokalu;
-                    xlsSheetLokale.Cells[lokalCounter, 13].Value = lokal.OpisPomieszczenPrzynależnych;
-                    xlsSheetLokale.Cells[lokalCounter, 14].Value = lokal.Kondygnacja;
-                    xlsSheetLokale.Cells[lokalCounter, 15].Value = lokal.Nieruchomosc;
-                    xlsSheetLokale.Cells[lokalCounter, 16].Value = lokal.Odrebnosc;
+                    xlsSheetLokale.Cells[lokalCounter, 8].Value = lokal.IdentyfikatorLokalu;
+                    xlsSheetLokale.Cells[lokalCounter, 9].Value = lokal.Ulica;
+                    xlsSheetLokale.Cells[lokalCounter, 10].Value = lokal.NumerBudynku;
+                    xlsSheetLokale.Cells[lokalCounter, 11].Value = lokal.NumerLokalu;
+                    xlsSheetLokale.Cells[lokalCounter, 12].Value = lokal.PrzeznaczenieLokalu;
+                    xlsSheetLokale.Cells[lokalCounter, 13].Value = lokal.OpisLokalu;
+                    xlsSheetLokale.Cells[lokalCounter, 14].Value = lokal.OpisPomieszczenPrzynależnych;
+                    xlsSheetLokale.Cells[lokalCounter, 15].Value = lokal.Kondygnacja;
+                    xlsSheetLokale.Cells[lokalCounter, 16].Value = lokal.Nieruchomosc;
+                    xlsSheetLokale.Cells[lokalCounter, 17].Value = lokal.Odrebnosc;
 
 
                     lokalCounter++;
@@ -316,16 +322,16 @@ namespace KWReader
 
             Console.WriteLine("Formatowanie arkusza działek...");
 
-            xlsSheetDzialki.Cells["A1:O" + Convert.ToString(dzialkaCounter - 1)].AutoFilter = true;
+            xlsSheetDzialki.Cells["A1:P" + Convert.ToString(dzialkaCounter - 1)].AutoFilter = true;
             xlsSheetDzialki.View.FreezePanes(2, 2);
             xlsSheetDzialki.Cells.Style.Font.Size = 10;
             xlsSheetDzialki.Cells.AutoFitColumns(0);
             xlsSheetDzialki.Column(3).Width = 24;
-            xlsSheetDzialki.Column(13).Width = 50;
+            xlsSheetDzialki.Column(14).Width = 50;
 
             Console.WriteLine("Formatowanie arkusza budynków...");
 
-            xlsSheetBudynki.Cells["A1:R" + Convert.ToString(budynekCounter - 1)].AutoFilter = true;
+            xlsSheetBudynki.Cells["A1:S" + Convert.ToString(budynekCounter - 1)].AutoFilter = true;
             xlsSheetBudynki.View.FreezePanes(2, 2);
             xlsSheetBudynki.Cells.Style.Font.Size = 10;
             xlsSheetBudynki.Cells.AutoFitColumns(0);
@@ -333,7 +339,7 @@ namespace KWReader
 
             Console.WriteLine("Formatowanie arkusza lokali...");
 
-            xlsSheetLokale.Cells["A1:P" + Convert.ToString(lokalCounter - 1)].AutoFilter = true;
+            xlsSheetLokale.Cells["A1:R" + Convert.ToString(lokalCounter - 1)].AutoFilter = true;
             xlsSheetLokale.View.FreezePanes(2, 2);
             xlsSheetLokale.Cells.Style.Font.Size = 10;
             xlsSheetLokale.Cells.AutoFitColumns(0);
