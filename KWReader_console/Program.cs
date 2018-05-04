@@ -13,7 +13,11 @@ namespace KWReader
         {
             if (args.Length < 1)
             {
-                Console.WriteLine("Jako parametr podaj ścieżkę do plików *.html");
+                Console.WriteLine("Aplikacja do pozyskiwania danych z plików *.html dla KW");
+                Console.WriteLine("Copyright © 2018 GISNET\n");
+                Console.WriteLine("Jako parametr podaj ścieżkę do plików *.html\n");
+                Console.WriteLine("Wciśnij dowolny klawisz...");
+                Console.ReadKey();
                 return;
             }
 
@@ -187,7 +191,7 @@ namespace KWReader
                     xlsSheetDzialki.Cells[dzialkaCounter, 13].Value = dzialka.SposobKorzystania;
 
                     xlsSheetDzialki.Cells[dzialkaCounter, 14].Value = kw.KwDzialkaList.Count;
-                    xlsSheetDzialki.Cells[dzialkaCounter, 15].Value = kw.KwObszar.ObszarHA;
+                    xlsSheetDzialki.Cells[dzialkaCounter, 15].Value = kw.KwObszar.ObszarHa;
 
                     dzialkaCounter++;
 

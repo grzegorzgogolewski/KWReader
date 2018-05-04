@@ -902,7 +902,7 @@ namespace KW_Tools
                     // jeśli dane o położeniu zapisane są w postaci tabeli to musi ona posiadać conajmniej trzy wiersze
                     if (rows.Count <= 2)
                     {
-                        KwObszar.ObszarHA = "- - -";
+                        KwObszar.ObszarHa = "- - -";
                         KwLog.Add("kwObszar:".PadRight(40) + "Brak informacji o obszar, tabela nie właściwej liczby wierszy.");
                     }
                     else
@@ -921,11 +921,11 @@ namespace KW_Tools
                                     case "1. Obszar":
                                         if (cells.Count == 3) // testowanie ilości komórek w wierszu
                                         {
-                                           KwObszar.ObszarHA =  cells[i + 2].InnerText;
+                                           KwObszar.ObszarHa =  cells[i + 2].InnerText;
                                         }
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
-                                            KwObszar.ObszarHA = "- - -";
+                                            KwObszar.ObszarHa = "- - -";
                                             KwLog.Add("KwObszar.ObszarHA:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                     

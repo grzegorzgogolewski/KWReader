@@ -2,6 +2,6 @@
 {
     public class Obszar
     {
-        public string ObszarHA;
+        public string ObszarHa;
     }
 }
