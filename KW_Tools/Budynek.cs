@@ -8,12 +8,10 @@ namespace KW_Tools
     public class Budynek
     {
         public string IdentyfikatorBudynku;
-        public string IdentyfikatorDzialki;
-        /// <summary>
-        /// Położenie może być listą atrybutów
-        /// </summary>
+        public List<string> IdentyfikatorDzialkiList = new List<string>();
+        public bool IdentyfikatorDzialkiMulti = false;
         public List<string> PolozenieList = new List<string>();
-        public bool PolozenieMulti;
+        public bool PolozenieMulti = false;
         public string NazwaUlicy;
         public string NumerPorzadkowy;
         public string LiczbaKondygnacji;

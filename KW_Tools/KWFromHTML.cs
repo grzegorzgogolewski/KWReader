@@ -21,6 +21,8 @@ namespace KW_Tools
         public List<Polozenie> KwPolozenieList = new List<Polozenie>();
         public List<Dzialka> KwDzialkaList = new List<Dzialka>();
         public List<Budynek> KwBudynekList = new List<Budynek>();
+        public List<Lokal> KwLokalList = new List<Lokal>();
+        public Obszar KwObszar = new Obszar();
 
         /// <summary>
         /// lista przechowująca błędy wychwycone podczas przetwarzania księgi wieczystej
@@ -396,6 +398,7 @@ namespace KW_Tools
                                         }
                                         else // jeśli położenie jest pojedynczym tekstem
                                         {
+                                            kwDzialka.PolozenieMulti = false;
                                             kwDzialka.PolozenieList.Add(cells[i + 1].InnerText);
                                             KwLog.Add("kwDzialka.Polozenie:".PadRight(40) + "Atrybut polozenie nie jest zbudowany w postaci tabeli.");
                                         }
@@ -441,8 +444,9 @@ namespace KW_Tools
                                         }
                                         else // jeśli ulica jest pojedynczym tekstem
                                         {
+                                            kwDzialka.UlicaMulti = false;
                                             kwDzialka.UliceList.Add(cells[i + 1].InnerText);
-                                            KwLog.Add("kwDzialka.Ulica:".PadRight(40) + "Atrybut ulica nie jest zbudowany w postaci tabeli.");
+                                            // KwLog.Add("kwDzialka.Ulica:".PadRight(40) + "Atrybut ulica nie jest zbudowany w postaci tabeli.");
                                         }
                                         
                                         break;
@@ -508,18 +512,50 @@ namespace KW_Tools
                                         }
                                         break;
                                     
-                                    //TODO: Identyfikator może być wielokrotny. Należy zamienić go na listę obiektów
-                                    
                                     case "2. Identyfikator działki":
-                                        if (cells.Count == 2) // testowanie ilości komórek w wierszu
+
+                                        // jeśli położenie jest zbudowane w postaci tabeli
+                                        if (cells[i + 1].InnerHtml.IndexOf("table", StringComparison.Ordinal) > 0)
                                         {
-                                            kwBudynek.IdentyfikatorDzialki =  cells[i + 1].InnerText;
+                                            HtmlNode htmlIdentyfikatorTable = cells[i+1].SelectSingleNode("table");
+
+                                            HtmlNodeCollection htmlIdentyfikatorRows = htmlIdentyfikatorTable.SelectNodes("tr");
+
+                                            // jeśli tabela zawiera wiersze
+                                            if (htmlIdentyfikatorRows != null)
+                                            {
+                                                // jeśli tabela zawiera więcej niż jeden wiersz
+                                                kwBudynek.IdentyfikatorDzialkiMulti = htmlIdentyfikatorRows.Count > 1;
+
+                                                foreach (HtmlNode htmlIdentyfikatorRow in htmlIdentyfikatorRows)
+                                                {
+                                                    HtmlNodeCollection htmlIdentyfikatorCells = htmlIdentyfikatorRow.SelectNodes("td");
+
+                                                    if (htmlIdentyfikatorCells.Count == 3) // testowanie ilości komórek w wierszu
+                                                    {
+                                                        kwBudynek.IdentyfikatorDzialkiList.Add(htmlIdentyfikatorCells[2].InnerText);
+                                                    }
+                                                    else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                                    {
+                                                        kwBudynek.IdentyfikatorDzialkiList.Add("- - -");
+                                                        KwLog.Add("kwBudynek.Polozenie:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + htmlIdentyfikatorCells.Count);
+                                                    }
+                                                }
+                                            }
+                                            else // jeśli tabela nie ma wierszy
+                                            {
+                                                kwBudynek.IdentyfikatorDzialkiMulti = false;
+                                                kwBudynek.IdentyfikatorDzialkiList.Add("- - -");
+                                                KwLog.Add("kwBudynek.Polozenie:".PadRight(40) + "Tabela nie posiada wierszy.");
+                                            }
                                         }
-                                        else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                        else // jeśli tabela nie ma wierszy
                                         {
-                                            kwBudynek.IdentyfikatorDzialki = "- - -";
-                                            KwLog.Add("kwBudynek.IdentyfikatorDzialki:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
+                                            kwBudynek.IdentyfikatorDzialkiMulti = false;
+                                            kwBudynek.IdentyfikatorDzialkiList.Add("- - -");
+                                            KwLog.Add("kwBudynek.IdentyfikatorDzialkiList:".PadRight(40) + "Tabela nie posiada wierszy.");
                                         }
+
                                         break;
 
                                     case "3. Położenie": 
@@ -561,6 +597,7 @@ namespace KW_Tools
                                         }
                                         else // jeśli położenie jest pojedynczym tekstem
                                         {
+                                            kwBudynek.PolozenieMulti = false;
                                             kwBudynek.PolozenieList.Add(cells[i + 1].InnerText);
                                             KwLog.Add("kwBudynek.Polozenie:".PadRight(40) + "Atrybut polozenie nie jest zbudowany w postaci tabeli.");
                                         }
@@ -683,6 +720,222 @@ namespace KW_Tools
                         }
                     }
                 }
+
+                // --------------------------------------------------------------------------------
+                // Podrubryka 1.4.4 - Lokal
+                // --------------------------------------------------------------------------------
+
+                if (tableNode.InnerText.IndexOf("Podrubryka 1.4.4 - Lokal", StringComparison.Ordinal) > 0)
+                {
+                    // jeśli w tabeli z lokalem nie ma wiersza z odręnością, obiekt nie zostanie dodany
+                    if (tableNode.InnerText.IndexOf("11. Odrębność", StringComparison.Ordinal) <= 0)
+                    {
+                        // wygeneruj wyjątek bo plik html może być uszkodzony
+                        Console.WriteLine("Położenie bez rekordu '11. Odrębność'! Sprawdź poprawność pliku HTML.");
+                        throw new Exception();
+                    }
+
+                    Lokal kwLokal = new Lokal();
+
+                    // lokal jest dodatkowo umiesczony między znacznikami tbody
+                    foreach (HtmlNode tbody in tableNode.SelectNodes("tbody"))
+                    {
+                        // przetwórz wszystkie wiersze tabeli
+                        foreach (HtmlNode row in tbody.SelectNodes("tr"))
+                        {
+                            // kolekcja wszystkich komórek wiersza
+                            HtmlNodeCollection cells = row.SelectNodes("th|td");
+
+                            for (int i = 0; i < cells.Count; i++)
+                            {
+                                switch (cells[i].InnerText)
+                                {
+                                    case "1. Identyfikator lokalu":
+                                        if (cells.Count == 4) // testowanie ilości komórek w wierszu
+                                        {
+                                            kwLokal.IdentyfikatorLokalu =  cells[i + 2].InnerText;
+                                        }
+                                        else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                        {
+                                            kwLokal.IdentyfikatorLokalu = "- - -";
+                                            KwLog.Add("kwLokal.IdentyfikatorLokalu:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
+                                        }
+                                        break;
+
+                                    case "2. Ulica":
+                                        if (cells.Count == 3) // testowanie ilości komórek w wierszu
+                                        {
+                                            kwLokal.Ulica =  cells[i + 2].InnerText;
+                                        }
+                                        else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                        {
+                                            kwLokal.Ulica = "- - -";
+                                            KwLog.Add("kwLokal.Ulica:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                        }
+                                        break;
+
+                                    case "3. Numer budynku":
+                                        if (cells.Count == 3) // testowanie ilości komórek w wierszu
+                                        {
+                                            kwLokal.NumerBudynku =  cells[i + 2].InnerText;
+                                        }
+                                        else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                        {
+                                            kwLokal.NumerBudynku = "- - -";
+                                            KwLog.Add("kwLokal.NumerBudynku:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                        }
+                                        break;
+
+                                    case "4. Numer lokalu":
+                                        if (cells.Count == 3) // testowanie ilości komórek w wierszu
+                                        {
+                                            kwLokal.NumerLokalu =  cells[i + 2].InnerText;
+                                        }
+                                        else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                        {
+                                            kwLokal.NumerLokalu = "- - -";
+                                            KwLog.Add("kwLokal.NumerLokalu:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                        }
+
+                                        break;
+
+                                    case "5. Przeznaczenie lokalu":
+                                        if (cells.Count == 3) // testowanie ilości komórek w wierszu
+                                        {
+                                            kwLokal.PrzeznaczenieLokalu =  cells[i + 2].InnerText;
+                                        }
+                                        else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                        {
+                                            kwLokal.PrzeznaczenieLokalu = "- - -";
+                                            KwLog.Add("kwLokal.PrzeznaczenieLokalu:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                        }
+
+                                        break;
+
+                                    case "6. Opis lokalu":
+                                        if (cells.Count == 2) // testowanie ilości komórek w wierszu
+                                        {
+                                            kwLokal.OpisLokalu =  cells[i + 1].InnerText;
+                                        }
+                                        else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                        {
+                                            kwLokal.OpisLokalu = "- - -";
+                                            KwLog.Add("kwLokal.OpisLokalu:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
+                                        }
+
+                                        break;
+
+                                    case "7. Opis pomieszczeń przynależnych":
+                                        if (cells.Count == 2) // testowanie ilości komórek w wierszu
+                                        {
+                                            kwLokal.OpisPomieszczenPrzynależnych =  cells[i + 1].InnerText;
+                                        }
+                                        else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                        {
+                                            kwLokal.OpisPomieszczenPrzynależnych = "- - -";
+                                            KwLog.Add("kwLokal.OpisPomieszczenPrzynależnych:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
+                                        }
+
+                                        break;
+
+                                    case "8. Kondygnacja":
+                                        if (cells.Count == 3) // testowanie ilości komórek w wierszu
+                                        {
+                                            kwLokal.Kondygnacja =  cells[i + 2].InnerText;
+                                        }
+                                        else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                        {
+                                            kwLokal.Kondygnacja = "- - -";
+                                            KwLog.Add("kwLokal.Kondygnacja:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                        }
+
+                                        break;
+
+                                    case "10. Nieruchomość zabudowana budynkiem":
+                                        if (cells.Count == 2) // testowanie ilości komórek w wierszu
+                                        {
+                                            kwLokal.Nieruchomosc =  cells[i + 1].InnerText;
+                                        }
+                                        else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                        {
+                                            kwLokal.Nieruchomosc = "- - -";
+                                            KwLog.Add("kwLokal.Nieruchomosc:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
+                                        }
+
+                                        break;
+
+                                    case "11. Odrębność":
+                                        if (cells.Count == 3) // testowanie ilości komórek w wierszu
+                                        {
+                                            kwLokal.Odrebnosc =  cells[i + 2].InnerText;
+                                        }
+                                        else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                        {
+                                            kwLokal.Odrebnosc = "- - -";
+                                            KwLog.Add("kwLokal.Odrebnosc:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                        }
+
+                                        // w lokalu nie ma atrybutu położenie
+                                        kwLokal.PolozenieMulti = KwPolozenieList.Count > 1;
+                                        kwLokal.PolozenieList.Add("1");
+
+                                        KwLokalList.Add(kwLokal);
+                                        kwLokal  = new Lokal();
+
+                                        break;
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                // --------------------------------------------------------------------------------
+                // Rubryka 1.5 - Obszar
+                // --------------------------------------------------------------------------------
+
+                if (tableNode.InnerText.IndexOf("Rubryka 1.5 - Obszar", StringComparison.Ordinal) > 0)
+                {
+                    // przetwórz wszystkie wiersze w tabeli
+                    HtmlNodeCollection rows = tableNode.SelectNodes("tr");
+
+                    // jeśli dane o położeniu zapisane są w postaci tabeli to musi ona posiadać conajmniej trzy wiersze
+                    if (rows.Count <= 2)
+                    {
+                        KwObszar.ObszarHA = "- - -";
+                        KwLog.Add("kwObszar:".PadRight(40) + "Brak informacji o obszar, tabela nie właściwej liczby wierszy.");
+                    }
+                    else
+                    {
+                        // przetwórz wszystkie wiersze w tabeli
+                        foreach (HtmlNode row in tableNode.SelectNodes("tr"))
+                        {
+                            // przetwórz wszsytkie komórki danego wiersza, włącznie z nagłowkami wierszy
+                            HtmlNodeCollection cells = row.SelectNodes("th|td");
+
+                            // specjalnie "for" by móc przemieszczać się po konkretnych komórkach
+                            for (int i = 0; i < cells.Count; i++)
+                            {
+                                switch (cells[i].InnerText)
+                                {
+                                    case "1. Obszar":
+                                        if (cells.Count == 3) // testowanie ilości komórek w wierszu
+                                        {
+                                           KwObszar.ObszarHA =  cells[i + 2].InnerText;
+                                        }
+                                        else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                        {
+                                            KwObszar.ObszarHA = "- - -";
+                                            KwLog.Add("KwObszar.ObszarHA:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                        }
+                                    
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+
             }
 
             return KwLog.Count;
@@ -706,6 +959,28 @@ namespace KW_Tools
                 foreach (string ulica in dzialka.UliceList)
                 {
                     wynik = wynik + ulica + ", ";
+                }
+
+                wynik = wynik.Substring(0, wynik.Length - 2);
+            }
+
+            return wynik;
+
+        }
+
+        public string GetIdentyfikatorDzialkiForBudynek(Budynek budynek)
+        {
+            string wynik = "";
+
+            if (budynek.IdentyfikatorDzialkiList.Count == 1)
+            {
+                wynik =  budynek.IdentyfikatorDzialkiList[0];
+            }
+            else
+            {
+                foreach (string identyfikator in budynek.IdentyfikatorDzialkiList)
+                {
+                    wynik = wynik + identyfikator + ", ";
                 }
 
                 wynik = wynik.Substring(0, wynik.Length - 2);
@@ -852,6 +1127,74 @@ namespace KW_Tools
                     wynik = wynik.Substring(0, wynik.Length - 2);
                 }                    
             }
+
+            if (obiekt.GetType() == typeof(Lokal))
+            {
+                Lokal lokal = (Lokal) obiekt;
+
+                if (lokal.PolozenieList.Count == 1)
+                {
+                    try
+                    {
+                        switch (atrybut)
+                        {
+                            case PolozenieTyp.Wojewodztwo:
+                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(lokal.PolozenieList[0])).Wojewodztwo;
+                                break;
+                            case PolozenieTyp.Powiat:
+                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(lokal.PolozenieList[0])).Powiat;
+                                break;
+                            case PolozenieTyp.Gmina:
+                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(lokal.PolozenieList[0])).Gmina;
+                                break;
+                            case PolozenieTyp.Miejscowosc:
+                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(lokal.PolozenieList[0])).Miejscowosc;
+                                break;
+                            case PolozenieTyp.Dzielnica:
+                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(lokal.PolozenieList[0])).Dzielnica;
+                                break;                    }
+                    }
+                    catch (Exception)
+                    {
+                        wynik =  "- - -";
+                    }
+                }
+                else
+                {
+                    foreach (string polozenie in lokal.PolozenieList)
+                    {
+                        try
+                        {
+                            switch (atrybut)
+                            {
+                                case PolozenieTyp.Wojewodztwo:
+                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Wojewodztwo + ", ";
+                                    break;
+                                case PolozenieTyp.Powiat:
+                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Powiat + ", ";
+                                    break;
+                                case PolozenieTyp.Gmina:
+                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Gmina + ", ";
+                                    break;
+                                case PolozenieTyp.Miejscowosc:
+                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Miejscowosc + ", ";
+                                    break;
+                                case PolozenieTyp.Dzielnica:
+                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Dzielnica + ", ";
+                                    break;
+                            }
+                            
+                        }
+                        catch (Exception)
+                        {
+                            wynik = wynik  + "- - -" + ", ";
+                        }
+                    }
+
+                    wynik = wynik.Substring(0, wynik.Length - 2);
+                }                    
+            }
+
 
             return wynik;
         }
