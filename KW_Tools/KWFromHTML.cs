@@ -124,7 +124,7 @@ namespace KW_Tools
                                     else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                     {
                                         KwZamkniecieKsiegi.ChwilaZamkniecia = "- - -";
-                                        KwLog.Add("KwZamkniecieKsiegi.ChwilaZamkniecia:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
+                                        KwLog.Add("Rubryka 0.3 - Dane o zamknieciu ksiegi wieczystej;Chwila zamkniecia ksiegi;Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
                                     }
                                     
                                     break;
@@ -137,7 +137,7 @@ namespace KW_Tools
                                     else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                     {
                                         KwZamkniecieKsiegi.PodstawaZamkniecia = "- - -";
-                                        KwLog.Add("KwZamkniecieKsiegi.PodstawaZamkniecia:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
+                                        KwLog.Add("Rubryka 0.3 - Dane o zamknieciu ksiegi wieczystej;Podstawa zamkniecia ksiegi;Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
                                     }
 
                                     break;
@@ -172,7 +172,7 @@ namespace KW_Tools
 
                         KwPolozenieList.Add(kwPolozenie);
 
-                        KwLog.Add("kwPolozenie:".PadRight(40) + "Brak informacji o położeniu, tabela nie właściwej liczby wierszy.");
+                        KwLog.Add("Rubryka 1.3 - Położenie;;Brak informacji o położeniu, tabela nie właściwej liczby wierszy.");
                     }
                     else
                     {
@@ -206,7 +206,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwPolozenie.NumerPorzadkowy = "brak";
-                                            KwLog.Add("kwPolozenie.NumerPorzadkowy:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
+                                            KwLog.Add("Rubryka 1.3 - Położenie;1. Numer porządkowy;Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -218,7 +218,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwPolozenie.Wojewodztwo = "- - -";
-                                            KwLog.Add("kwPolozenie.Wojewodztwo:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Rubryka 1.3 - Położenie;2. Województwo;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -230,7 +230,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwPolozenie.Powiat = "- - -";
-                                            KwLog.Add("kwPolozenie.Powiat:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Rubryka 1.3 - Położenie;3. Powiat;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -242,7 +242,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwPolozenie.Gmina = "- - -";
-                                            KwLog.Add("kwPolozenie.Gmina:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Rubryka 1.3 - Położenie;4. Gmina;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -254,7 +254,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwPolozenie.Miejscowosc = "- - -";
-                                            KwLog.Add("kwPolozenie.Miejscowosc:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Rubryka 1.3 - Położenie;5. Miejscowość;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -266,7 +266,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwPolozenie.Dzielnica = "- - -";
-                                            KwLog.Add("kwPolozenie.Dzielnica:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Rubryka 1.3 - Położenie;6. Dzielnica;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
 
                                         KwPolozenieList.Add(kwPolozenie);
@@ -316,7 +316,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwDzialka.IdentyfikatorDzialki = "- - -";
-                                            KwLog.Add("kwDzialka.IdentyfikatorDzialki:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.1 - Działka ewidencyjna;1. Identyfikator działki;Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -328,7 +328,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwDzialka.NumerDzialki = "- - -";
-                                            KwLog.Add("kwDzialka.NumerDzialki:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.1 - Działka ewidencyjna;2. Numer działki;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -340,7 +340,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwDzialka.NumerObrebuEwidencyjnego = "- - -";
-                                            KwLog.Add("kwDzialka.NumerObrebuEwidencyjnego:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.1 - Działka ewidencyjna;A: numer obrębu ewidencyjnego;Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -352,7 +352,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         { 
                                             kwDzialka.NazwaObrebuEwidencyjnego = "- - -";
-                                            KwLog.Add("kwDzialka.NazwaObrebuEwidencyjnego:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.1 - Działka ewidencyjna;B: nazwa obrębu ewidencyjnego;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -385,7 +385,7 @@ namespace KW_Tools
                                                     else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                                     {
                                                         kwDzialka.PolozenieList.Add("- - -");
-                                                        KwLog.Add("kwDzialka.Polozenie:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + htmlPolozenieCells.Count);
+                                                        KwLog.Add("Podrubryka 1.4.1 - Działka ewidencyjna;4. Położenie;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + htmlPolozenieCells.Count);
                                                     }
                                                 }
                                             }
@@ -393,14 +393,14 @@ namespace KW_Tools
                                             {
                                                 kwDzialka.PolozenieMulti = false;
                                                 kwDzialka.PolozenieList.Add("- - -");
-                                                KwLog.Add("kwDzialka.Polozenie:".PadRight(40) + "Tabela nie posiada wierszy.");
+                                                KwLog.Add("Podrubryka 1.4.1 - Działka ewidencyjna;4. Położenie;Zadeklarowana tabela nie posiada wierszy.");
                                             }
                                         }
                                         else // jeśli położenie jest pojedynczym tekstem
                                         {
                                             kwDzialka.PolozenieMulti = false;
                                             kwDzialka.PolozenieList.Add(cells[i + 1].InnerText);
-                                            KwLog.Add("kwDzialka.Polozenie:".PadRight(40) + "Atrybut polozenie nie jest zbudowany w postaci tabeli.");
+                                            KwLog.Add("Podrubryka 1.4.1 - Działka ewidencyjna;4. Położenie;Atrybut nie jest zbudowany w postaci tabeli:" + cells[i + 1].InnerText);
                                         }
                                         
                                         break;
@@ -431,7 +431,7 @@ namespace KW_Tools
                                                     else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                                     {
                                                         kwDzialka.UliceList.Add("- - -");
-                                                        KwLog.Add("kwDzialka.Ulica:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + htmlUlicaCells.Count);
+                                                        KwLog.Add("Podrubryka 1.4.1 - Działka ewidencyjna;5. Ulica;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + htmlUlicaCells.Count);
                                                     }
                                                 }
                                             }
@@ -439,14 +439,14 @@ namespace KW_Tools
                                             {
                                                 kwDzialka.UlicaMulti = false;
                                                 kwDzialka.UliceList.Add("- - -");
-                                                KwLog.Add("kwDzialka.Ulica:".PadRight(40) + "Tabela nie posiada wierszy.");
+                                                KwLog.Add("Podrubryka 1.4.1 - Działka ewidencyjna;5. Ulica;Zadeklarowana tabela nie posiada wierszy.");
                                             }
                                         }
                                         else // jeśli ulica jest pojedynczym tekstem
                                         {
                                             kwDzialka.UlicaMulti = false;
                                             kwDzialka.UliceList.Add(cells[i + 1].InnerText);
-                                            // KwLog.Add("kwDzialka.Ulica:".PadRight(40) + "Atrybut ulica nie jest zbudowany w postaci tabeli.");
+                                            KwLog.Add("Podrubryka 1.4.1 - Działka ewidencyjna;Ulica;Atrybut nie jest zbudowany w postaci tabeli: " + cells[i + 1].InnerText);
                                         }
                                         
                                         break;
@@ -459,7 +459,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwDzialka.SposobKorzystania = "- - -";
-                                            KwLog.Add("kwDzialka.SposobKorzystania:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.1 - Działka ewidencyjna;6. Sposób korzystania;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
 
                                         KwDzialkaList.Add(kwDzialka);
@@ -508,13 +508,13 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwBudynek.IdentyfikatorBudynku = "- - -";
-                                            KwLog.Add("kwDzialka.IdentyfikatorBudynku:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.2 - Budynek;1. Identyfikator budynku;Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
                                         }
                                         break;
                                     
                                     case "2. Identyfikator działki":
 
-                                        // jeśli położenie jest zbudowane w postaci tabeli
+                                        // jeśli Identyfikator jest zbudowane w postaci tabeli
                                         if (cells[i + 1].InnerHtml.IndexOf("table", StringComparison.Ordinal) > 0)
                                         {
                                             HtmlNode htmlIdentyfikatorTable = cells[i+1].SelectSingleNode("table");
@@ -538,7 +538,7 @@ namespace KW_Tools
                                                     else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                                     {
                                                         kwBudynek.IdentyfikatorDzialkiList.Add("- - -");
-                                                        KwLog.Add("kwBudynek.Polozenie:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + htmlIdentyfikatorCells.Count);
+                                                        KwLog.Add("Podrubryka 1.4.2 - Budynek;2. Identyfikator działki;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + htmlIdentyfikatorCells.Count);
                                                     }
                                                 }
                                             }
@@ -546,14 +546,14 @@ namespace KW_Tools
                                             {
                                                 kwBudynek.IdentyfikatorDzialkiMulti = false;
                                                 kwBudynek.IdentyfikatorDzialkiList.Add("- - -");
-                                                KwLog.Add("kwBudynek.Polozenie:".PadRight(40) + "Tabela nie posiada wierszy.");
+                                                KwLog.Add("Podrubryka 1.4.2 - Budynek;  2. Identyfikator działki;Zadeklarowana tabela nie posiada wierszy.");
                                             }
                                         }
-                                        else // jeśli tabela nie ma wierszy
+                                        else // jeśli Identyfikator jest pojedynczym tekstem
                                         {
                                             kwBudynek.IdentyfikatorDzialkiMulti = false;
-                                            kwBudynek.IdentyfikatorDzialkiList.Add("- - -");
-                                            KwLog.Add("kwBudynek.IdentyfikatorDzialkiList:".PadRight(40) + "Tabela nie posiada wierszy.");
+                                            kwBudynek.IdentyfikatorDzialkiList.Add(cells[i + 1].InnerText);
+                                            KwLog.Add("Podrubryka 1.4.2 - Budynek;2. Identyfikator działki;Atrybut nie jest zbudowany w postaci tabeli: " + cells[i + 1].InnerText);
                                         }
 
                                         break;
@@ -584,7 +584,7 @@ namespace KW_Tools
                                                     else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                                     {
                                                         kwBudynek.PolozenieList.Add("- - -");
-                                                        KwLog.Add("kwBudynek.Polozenie:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + htmlPolozenieCells.Count);
+                                                        KwLog.Add("Podrubryka 1.4.2 - Budynek;3. Położenie;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + htmlPolozenieCells.Count);
                                                     }
                                                 }
                                             }
@@ -592,14 +592,14 @@ namespace KW_Tools
                                             {
                                                 kwBudynek.PolozenieMulti = false;
                                                 kwBudynek.PolozenieList.Add("- - -");
-                                                KwLog.Add("kwBudynek.Polozenie:".PadRight(40) + "Tabela nie posiada wierszy.");
+                                                KwLog.Add("Podrubryka 1.4.2 - Budynek;3. Położenie;Zadeklarowana tabela nie posiada wierszy.");
                                             }
                                         }
                                         else // jeśli położenie jest pojedynczym tekstem
                                         {
                                             kwBudynek.PolozenieMulti = false;
                                             kwBudynek.PolozenieList.Add(cells[i + 1].InnerText);
-                                            KwLog.Add("kwBudynek.Polozenie:".PadRight(40) + "Atrybut polozenie nie jest zbudowany w postaci tabeli.");
+                                            KwLog.Add("Podrubryka 1.4.2 - Budynek;3. Położenie;Atrybut nie jest zbudowany w postaci tabeli: " + cells[i + 1].InnerText);
                                         }
                                         
                                         break;
@@ -612,7 +612,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwBudynek.NazwaUlicy = "- - -";
-                                            KwLog.Add("kwBudynek.NazwaUlicy:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.2 - Budynek;A: nazwa ulicy (alei, placu);Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -624,7 +624,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwBudynek.NumerPorzadkowy = "- - -";
-                                            KwLog.Add("kwBudynek.NumerPorzadkowy:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.2 - Budynek;B: numer porządkowy budynku;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -636,7 +636,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwBudynek.LiczbaKondygnacji = "- - -";
-                                            KwLog.Add("kwBudynek.LiczbaKondygnacji:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.2 - Budynek;5. Liczba kondygnacji;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -648,7 +648,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwBudynek.LiczbaLokali = "- - -";
-                                            KwLog.Add("kwBudynek.LiczbaLokali:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.2 - Budynek;6. Liczba samodzielnych lokali;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -660,7 +660,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwBudynek.PowierzchniaUzytkowa = "- - -";
-                                            KwLog.Add("kwBudynek.PowierzchniaUzytkowa:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.2 - Budynek;7. Powierzchnia użytkowa budynku;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -672,7 +672,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwBudynek.Przeznaczenie = "- - -";
-                                            KwLog.Add("kwBudynek.Przeznaczenie:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.2 - Budynek;8. Przeznaczenie budynku;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -684,7 +684,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwBudynek.DalszyOpis = "- - -";
-                                            KwLog.Add("kwBudynek.DalszyOpis:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.2 - Budynek;9. Dalszy opis budynku;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -696,7 +696,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwBudynek.Nieruchomosc = "- - -";
-                                            KwLog.Add("kwBudynek.Nieruchomosc:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.2 - Budynek;10. Nieruchomość, na której usytuowany jest budynek;Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -708,7 +708,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwBudynek.Odrebnosc = "- - -";
-                                            KwLog.Add("kwBudynek.Odrebnosc:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.2 - Budynek;11. Odrębność;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
 
                                         KwBudynekList.Add(kwBudynek);
@@ -758,7 +758,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwLokal.IdentyfikatorLokalu = "- - -";
-                                            KwLog.Add("kwLokal.IdentyfikatorLokalu:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.4 - Lokal;1. Identyfikator lokalu;Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -770,7 +770,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwLokal.Ulica = "- - -";
-                                            KwLog.Add("kwLokal.Ulica:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.4 - Lokal;2. Ulica;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -782,7 +782,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwLokal.NumerBudynku = "- - -";
-                                            KwLog.Add("kwLokal.NumerBudynku:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.4 - Lokal;3. Numer budynku;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                         break;
 
@@ -794,7 +794,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwLokal.NumerLokalu = "- - -";
-                                            KwLog.Add("kwLokal.NumerLokalu:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.4 - Lokal;4. Numer lokalu;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
 
                                         break;
@@ -807,7 +807,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwLokal.PrzeznaczenieLokalu = "- - -";
-                                            KwLog.Add("kwLokal.PrzeznaczenieLokalu:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.4 - Lokal;5. Przeznaczenie lokalu;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
 
                                         break;
@@ -820,7 +820,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwLokal.OpisLokalu = "- - -";
-                                            KwLog.Add("kwLokal.OpisLokalu:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.4 - Lokal;6. Opis lokalu;Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
                                         }
 
                                         break;
@@ -833,7 +833,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwLokal.OpisPomieszczenPrzynależnych = "- - -";
-                                            KwLog.Add("kwLokal.OpisPomieszczenPrzynależnych:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.4 - Lokal;7. Opis pomieszczeń przynależnych;Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
                                         }
 
                                         break;
@@ -846,7 +846,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwLokal.Kondygnacja = "- - -";
-                                            KwLog.Add("kwLokal.Kondygnacja:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.4 - Lokal;8. Kondygnacja;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
 
                                         break;
@@ -859,7 +859,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwLokal.Nieruchomosc = "- - -";
-                                            KwLog.Add("kwLokal.Nieruchomosc:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.4 - Lokal;10. Nieruchomość zabudowana budynkiem;Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
                                         }
 
                                         break;
@@ -872,7 +872,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             kwLokal.Odrebnosc = "- - -";
-                                            KwLog.Add("kwLokal.Odrebnosc:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Podrubryka 1.4.4 - Lokal;11. Odrębność;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
 
                                         // w lokalu nie ma atrybutu położenie
@@ -903,7 +903,7 @@ namespace KW_Tools
                     if (rows.Count <= 2)
                     {
                         KwObszar.ObszarHa = "- - -";
-                        KwLog.Add("kwObszar:".PadRight(40) + "Brak informacji o obszar, tabela nie właściwej liczby wierszy.");
+                        KwLog.Add("Rubryka 1.5 - Obszar;;Brak informacji o obszar, tabela nie ma właściwej liczby wierszy.");
                     }
                     else
                     {
@@ -926,7 +926,7 @@ namespace KW_Tools
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
                                             KwObszar.ObszarHa = "- - -";
-                                            KwLog.Add("KwObszar.ObszarHA:".PadRight(40) + "Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
+                                            KwLog.Add("Rubryka 1.5 - Obszar;1. Obszar;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
                                     
                                         break;

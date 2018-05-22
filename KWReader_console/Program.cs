@@ -121,6 +121,8 @@ namespace KWReader
             List<string> listaKwLokale = new List<string>();
             List<string> listaKwZamkniete = new List<string>();
 
+            Dictionary<string, List<string>> listaLog = new Dictionary<string, List<string>>();
+
             foreach (string file in fileEntries)
             {
                 i++;
@@ -254,6 +256,9 @@ namespace KWReader
                     lokalCounter++;
                 }
 
+                // dodaj liste błedów danej kw do listy globalnej
+                listaLog.Add(file, kw.KwLog);
+
                 if (kw.KwLog.Count != 0)
                 {
                     StreamWriter logFile = new StreamWriter(new FileStream(file.Substring(0, file.LastIndexOf(".", StringComparison.Ordinal)) + ".log", FileMode.Create), Encoding.UTF8);
@@ -308,6 +313,24 @@ namespace KWReader
             foreach (string ksiega in listaKwZamkniete)
             {
                 outputFile.WriteLine(ksiega);
+            }
+            outputFile.Close();
+            // ------------------------------------------------------------------------------------
+
+            // ------------------------------------------------------------------------------------
+            // lista danych dla pliku log
+            // ------------------------------------------------------------------------------------
+            outputFile = new StreamWriter(new FileStream(args[0].TrimEnd('\\') + "\\!listaKW_LOG.csv", FileMode.Create), Encoding.UTF8);
+
+            outputFile.WriteLine("NazwaPliku;Rubryka;Pole");
+
+            foreach (KeyValuePair<string, List<string>> loglist in listaLog)
+            {
+                foreach (string logText in loglist.Value)
+                {
+                    outputFile.WriteLine(loglist.Key + ";" + logText );
+                }
+
             }
             outputFile.Close();
             // ------------------------------------------------------------------------------------
