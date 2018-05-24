@@ -322,7 +322,7 @@ namespace KWReader
             // ------------------------------------------------------------------------------------
             outputFile = new StreamWriter(new FileStream(args[0].TrimEnd('\\') + "\\!listaKW_LOG.csv", FileMode.Create), Encoding.UTF8);
 
-            outputFile.WriteLine("NazwaPliku;Rubryka;Pole");
+            outputFile.WriteLine("NazwaPliku;Rubryka;Pole;Opis");
 
             foreach (KeyValuePair<string, List<string>> loglist in listaLog)
             {
