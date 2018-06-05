@@ -13,5 +13,6 @@ namespace KW_Tools
         public List<string> UliceList = new List<string>();
         public bool UlicaMulti = false;
         public string SposobKorzystania;
+        public string OdlaczenieKw;
     }
 }

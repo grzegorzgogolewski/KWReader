@@ -58,9 +58,10 @@ namespace KWReader
             xlsSheetDzialki.Cells[1, 12].Value = "UlicaMulti";
             xlsSheetDzialki.Cells[1, 13].Value = "Ulica";
             xlsSheetDzialki.Cells[1, 14].Value = "SposobKorzystania";
+            xlsSheetDzialki.Cells[1, 15].Value = "OdlaczenieKW";
 
-            xlsSheetDzialki.Cells[1, 15].Value = "LiczbaDZwKW";
-            xlsSheetDzialki.Cells[1, 16].Value = "PowObszaru";
+            xlsSheetDzialki.Cells[1, 16].Value = "LiczbaDZwKW";
+            xlsSheetDzialki.Cells[1, 17].Value = "PowObszaru";
 
             ExcelWorksheet xlsSheetBudynki = xlsWorkbook.Workbook.Worksheets.Add("Budynki");
 
@@ -195,9 +196,10 @@ namespace KWReader
                     xlsSheetDzialki.Cells[dzialkaCounter, 12].Value = dzialka.UlicaMulti;
                     xlsSheetDzialki.Cells[dzialkaCounter, 13].Value = kw.GetUlicaForDzialka(dzialka);
                     xlsSheetDzialki.Cells[dzialkaCounter, 14].Value = dzialka.SposobKorzystania;
+                    xlsSheetDzialki.Cells[dzialkaCounter, 15].Value = dzialka.OdlaczenieKw;
 
-                    xlsSheetDzialki.Cells[dzialkaCounter, 15].Value = kw.KwDzialkaList.Count;
-                    xlsSheetDzialki.Cells[dzialkaCounter, 16].Value = kw.KwObszar.ObszarHa;
+                    xlsSheetDzialki.Cells[dzialkaCounter, 16].Value = kw.KwDzialkaList.Count;
+                    xlsSheetDzialki.Cells[dzialkaCounter, 17].Value = kw.KwObszar.ObszarHa;
 
                     dzialkaCounter++;
 

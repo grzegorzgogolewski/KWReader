@@ -286,10 +286,10 @@ namespace KW_Tools
                 if (tableNode.InnerText.IndexOf("Podrubryka 1.4.1 - Działka ewidencyjna", StringComparison.Ordinal) > 0)
                 {
                     // jeśli w tabeli z działką nie ma wiersza ze sposobem korzystania, obiekt nie zostanie dodany
-                    if (tableNode.InnerText.IndexOf("6. Sposób korzystania", StringComparison.Ordinal) <= 0)
+                    if (tableNode.InnerText.IndexOf("7. Odłączenie", StringComparison.Ordinal) <= 0)
                     {
                         // wygeneruj wyjątek bo plik html może być uszkodzony
-                        Console.WriteLine("Położenie bez rekordu '6. Sposób korzystania'! Sprawdź poprawność pliku HTML.");
+                        Console.WriteLine("Położenie bez rekordu '7. Odłączenie'! Sprawdź poprawność pliku HTML.");
                         throw new Exception();
                     }
 
@@ -462,8 +462,22 @@ namespace KW_Tools
                                             KwLog.Add("Podrubryka 1.4.1 - Działka ewidencyjna;6. Sposób korzystania;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + cells.Count);
                                         }
 
+                                        break;
+
+                                    case "7. Odłączenie":
+                                        if (cells.Count == 4) // testowanie ilości komórek w wierszu
+                                        {
+                                            kwDzialka.OdlaczenieKw = cells[i + 3].InnerText;
+                                        }
+                                        else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
+                                        {
+                                            kwDzialka.OdlaczenieKw = "- - -";
+                                            KwLog.Add("Podrubryka 1.4.1 - Działka ewidencyjna;7. Odłączenie;Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + cells.Count);
+                                        }
+
                                         KwDzialkaList.Add(kwDzialka);
                                         kwDzialka  = new Dzialka();
+
                                         break;
                                 }
                             }
