@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
-using KW_Tools;
+using KWTools;
 using OfficeOpenXml;
 
 namespace KWReader
@@ -21,8 +22,84 @@ namespace KWReader
                 return;
             }
 
-            FileInfo xlsFile = new FileInfo(args[0].TrimEnd('\\') + "\\!KW.xlsx");
-            if (xlsFile.Exists) xlsFile.Delete();
+            List<KwFromHtml> listaKw = new List<KwFromHtml>();
+            
+            List<string> listaKwDzialki = new List<string>();
+            List<string> listaKwBudynki = new List<string>();
+            List<string> listaKwLokale = new List<string>();
+            List<string> listaKwZamkniete = new List<string>();
+
+            Dictionary<string, List<string>> listaLog = new Dictionary<string, List<string>>();
+
+            string [] fileEntries = Directory.GetFiles(args[0], "*.html");
+            
+            Console.WriteLine("Przetwarzanie {0} ksiąg wieczystych...", fileEntries.Length);
+
+            int kwCounter = 0;
+
+            // czytanie KW i ich parsowanie + statystyki z operacji
+            foreach (string file in fileEntries)
+            {
+                kwCounter++;
+
+                StreamReader htmlFile = new StreamReader(new FileStream(file, FileMode.Open), Encoding.UTF8);
+
+                KwFromHtml kw = new KwFromHtml(htmlFile.ReadToEnd());
+            
+                htmlFile.Close();
+
+                kw.File = file;
+
+                kw.ParseKw();
+
+                listaKw.Add(kw);
+
+                // dodaj do listy numery ksiąg wieczystych, które mają działki
+                if (kw.KwDzialkaList.Count > 0)
+                {
+                    listaKwDzialki.Add(kw.KwInformacjePodstawowe.NumerKsiegi);
+                }
+
+                // dodaj do listy numery ksiąg wieczystych, które mają budynki
+                if (kw.KwBudynekList.Count > 0)
+                {
+                    listaKwBudynki.Add(kw.KwInformacjePodstawowe.NumerKsiegi);
+                }
+
+                // dodaj do listy numery ksiąg wieczystych, które mają lokale
+                if (kw.KwLokalList.Count > 0)
+                {
+                    listaKwLokale.Add(kw.KwInformacjePodstawowe.NumerKsiegi);
+                }
+
+                // dodaj liste błedów danej kw do listy globalnej
+                listaLog.Add(kw.File, kw.KwLog);
+
+                //Console.WriteLine("Odczyt KW: [{0, 6}/{1, 6}]: {2}, Liczba działek: {3, 3}, Liczba budynków: {4, 3}, Liczba lokali: {5, 3}", 
+                //kwCounter, fileEntries.Length, kw.KwInformacjePodstawowe.NumerKsiegi, kw.KwDzialkaList.Count, kw.KwBudynekList.Count, kw.KwLokalList.Count);
+
+            }
+
+            // ====================================================================================
+            // Zapisywanie danych do Excela
+            // ====================================================================================
+
+            Console.WriteLine("Zapisywanie danych o {0} księgach wieczystych...", fileEntries.Length);
+
+            FileInfo xlsFile = new FileInfo(args[0].TrimEnd('\\') + "\\wynik\\KW.xlsx");
+            if (xlsFile.Exists)
+            {
+                try
+                {
+                    xlsFile.Delete();
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine("Zamknij plik z KW!");
+                    Console.ReadKey();
+                    return;
+                }
+            }
 
             ExcelPackage xlsWorkbook = new ExcelPackage(xlsFile);
 
@@ -104,61 +181,38 @@ namespace KWReader
             xlsSheetLokale.Cells[1, 11].Value = "NumerLokalu";
             xlsSheetLokale.Cells[1, 12].Value = "PrzeznaczenieLokalu";
             xlsSheetLokale.Cells[1, 13].Value = "OpisLokalu";
-            xlsSheetLokale.Cells[1, 14].Value = "OpisPomPrzyn";
-            xlsSheetLokale.Cells[1, 15].Value = "Kondygnacja";
-            xlsSheetLokale.Cells[1, 16].Value = "Nieruchomosc";
-            xlsSheetLokale.Cells[1, 17].Value = "Odrebnosc";
-
-            string [] fileEntries = Directory.GetFiles(args[0], "*.html");
-
-            int i = 0;
+            xlsSheetLokale.Cells[1, 14].Value = "LiczbaIzb";
+            xlsSheetLokale.Cells[1, 15].Value = "OpisPomPrzyn";
+            xlsSheetLokale.Cells[1, 16].Value = "Piwnica";
+            xlsSheetLokale.Cells[1, 17].Value = "Garaz";
+            xlsSheetLokale.Cells[1, 18].Value = "Postoj";
+            xlsSheetLokale.Cells[1, 19].Value = "Strych";
+            xlsSheetLokale.Cells[1, 20].Value = "Komorka";
+            xlsSheetLokale.Cells[1, 21].Value = "Inne";
+            xlsSheetLokale.Cells[1, 22].Value = "Kondygnacja";
+            xlsSheetLokale.Cells[1, 23].Value = "Nieruchomosc";
+            xlsSheetLokale.Cells[1, 24].Value = "Odrebnosc";  
+            xlsSheetLokale.Cells[1, 25].Value = "PowObszaru";
+            
             int dzialkaCounter = 2;
             int budynekCounter = 2;
             int lokalCounter = 2;
-            int kwCounter = 2;
 
-            List<string> listaKwDzialki = new List<string>();
-            List<string> listaKwBudynki = new List<string>();
-            List<string> listaKwLokale = new List<string>();
-            List<string> listaKwZamkniete = new List<string>();
+            kwCounter = 2;
 
-            Dictionary<string, List<string>> listaLog = new Dictionary<string, List<string>>();
+            List<string> lokalRodzajeIzb = new List<string>();
+            List<string> lokalRodzajePomieszczen = new List<string>();
 
-            foreach (string file in fileEntries)
+            foreach (KwFromHtml kw in listaKw)
             {
-                i++;
+                //Console.WriteLine("Zapis KW: [{0, 6}/{1, 6}]: {2}, Liczba działek: {3, 3}, Liczba budynków: {4, 3}, Liczba lokali: {5, 3}",  
+                //kwCounter - 1, fileEntries.Length, kw.KwInformacjePodstawowe.NumerKsiegi, kw.KwDzialkaList.Count, kw.KwBudynekList.Count, kw.KwLokalList.Count);
 
-                StreamReader htmlFile = new StreamReader(new FileStream(file, FileMode.Open), Encoding.UTF8);
-
-                KwFromHtml kw = new KwFromHtml(htmlFile.ReadToEnd());
-            
-                htmlFile.Close();
-
-                kw.ParseKw();
-
-                xlsSheetKw.Cells[kwCounter, 1].Value = file;
+                xlsSheetKw.Cells[kwCounter, 1].Value = kw.File;
                 xlsSheetKw.Cells[kwCounter, 2].Value = kw.KwInformacjePodstawowe.NumerKsiegi;
                 xlsSheetKw.Cells[kwCounter, 3].Value = kw.KwDzialkaList.Count;
                 xlsSheetKw.Cells[kwCounter, 4].Value = kw.KwBudynekList.Count;
                 xlsSheetKw.Cells[kwCounter, 5].Value = kw.KwLokalList.Count;
-
-                // dodaj do listy numery ksiąg wieczystych, które mają działki
-                if (kw.KwDzialkaList.Count > 0)
-                {
-                    listaKwDzialki.Add(kw.KwInformacjePodstawowe.NumerKsiegi);
-                }
-
-                // dodaj do listy numery ksiąg wieczystych, które mają budynki
-                if (kw.KwBudynekList.Count > 0)
-                {
-                    listaKwBudynki.Add(kw.KwInformacjePodstawowe.NumerKsiegi);
-                }
-
-                // dodaj do listy numery ksiąg wieczystych, które mają lokale
-                if (kw.KwLokalList.Count > 0)
-                {
-                    listaKwLokale.Add(kw.KwInformacjePodstawowe.NumerKsiegi);
-                }
 
                 // dodaj do listy numery ksiąg wieczystych, które są zamknięte
                 if (kw.KwZamkniecieKsiegi.ChwilaZamkniecia != "- - -" || kw.KwZamkniecieKsiegi.PodstawaZamkniecia != "- - -")
@@ -171,12 +225,7 @@ namespace KWReader
                     xlsSheetKw.Cells[kwCounter, 6].Value = "NIE";
                 }
 
-
-
                 kwCounter++;
-
-                Console.WriteLine("[{0, 6}/{1, 6}]: {2}, Liczba działek: {3, 3}, Liczba budynków: {4, 3}, Liczba lokali: {5, 3}",  
-                                  i, fileEntries.Length, kw.KwInformacjePodstawowe.NumerKsiegi, kw.KwDzialkaList.Count, kw.KwBudynekList.Count, kw.KwLokalList.Count);
 
                 foreach (Dzialka dzialka in kw.KwDzialkaList)
                 {
@@ -185,16 +234,16 @@ namespace KWReader
                     xlsSheetDzialki.Cells[dzialkaCounter, 3].Value = kw.KwZamkniecieKsiegi.PodstawaZamkniecia;
 
                     xlsSheetDzialki.Cells[dzialkaCounter, 4].Value = dzialka.PolozenieMulti;
-                    xlsSheetDzialki.Cells[dzialkaCounter, 5].Value = kw.GetPolozenie(dzialka, PolozenieTyp.Gmina);
-                    xlsSheetDzialki.Cells[dzialkaCounter, 6].Value = kw.GetPolozenie(dzialka, PolozenieTyp.Miejscowosc);
-                    xlsSheetDzialki.Cells[dzialkaCounter, 7].Value = kw.GetPolozenie(dzialka, PolozenieTyp.Dzielnica);
+                    xlsSheetDzialki.Cells[dzialkaCounter, 5].Value = dzialka.GetPolozenie(kw.KwPolozenieList, PolozenieTyp.Gmina);
+                    xlsSheetDzialki.Cells[dzialkaCounter, 6].Value = dzialka.GetPolozenie(kw.KwPolozenieList, PolozenieTyp.Miejscowosc);
+                    xlsSheetDzialki.Cells[dzialkaCounter, 7].Value = dzialka.GetPolozenie(kw.KwPolozenieList, PolozenieTyp.Dzielnica);
 
                     xlsSheetDzialki.Cells[dzialkaCounter, 8].Value = dzialka.IdentyfikatorDzialki;
                     xlsSheetDzialki.Cells[dzialkaCounter, 9].Value = dzialka.NumerDzialki;
                     xlsSheetDzialki.Cells[dzialkaCounter, 10].Value = dzialka.NumerObrebuEwidencyjnego;
                     xlsSheetDzialki.Cells[dzialkaCounter, 11].Value = dzialka.NazwaObrebuEwidencyjnego;
                     xlsSheetDzialki.Cells[dzialkaCounter, 12].Value = dzialka.UlicaMulti;
-                    xlsSheetDzialki.Cells[dzialkaCounter, 13].Value = kw.GetUlicaForDzialka(dzialka);
+                    xlsSheetDzialki.Cells[dzialkaCounter, 13].Value = dzialka.GetUlicaForDzialka();
                     xlsSheetDzialki.Cells[dzialkaCounter, 14].Value = dzialka.SposobKorzystania;
                     xlsSheetDzialki.Cells[dzialkaCounter, 15].Value = dzialka.OdlaczenieKw;
 
@@ -212,13 +261,13 @@ namespace KWReader
                     xlsSheetBudynki.Cells[budynekCounter, 3].Value = kw.KwZamkniecieKsiegi.PodstawaZamkniecia;
 
                     xlsSheetBudynki.Cells[budynekCounter, 4].Value = budynek.PolozenieMulti;
-                    xlsSheetBudynki.Cells[budynekCounter, 5].Value = kw.GetPolozenie(budynek, PolozenieTyp.Gmina);
-                    xlsSheetBudynki.Cells[budynekCounter, 6].Value = kw.GetPolozenie(budynek, PolozenieTyp.Miejscowosc);
-                    xlsSheetBudynki.Cells[budynekCounter, 7].Value = kw.GetPolozenie(budynek, PolozenieTyp.Dzielnica);
+                    xlsSheetBudynki.Cells[budynekCounter, 5].Value = budynek.GetPolozenie(kw.KwPolozenieList, PolozenieTyp.Gmina);
+                    xlsSheetBudynki.Cells[budynekCounter, 6].Value = budynek.GetPolozenie(kw.KwPolozenieList, PolozenieTyp.Miejscowosc);
+                    xlsSheetBudynki.Cells[budynekCounter, 7].Value = budynek.GetPolozenie(kw.KwPolozenieList, PolozenieTyp.Dzielnica);
 
                     xlsSheetBudynki.Cells[budynekCounter, 8].Value = budynek.IdentyfikatorBudynku;
                     xlsSheetBudynki.Cells[budynekCounter, 9].Value = budynek.IdentyfikatorDzialkiMulti;
-                    xlsSheetBudynki.Cells[budynekCounter, 10].Value = kw.GetIdentyfikatorDzialkiForBudynek(budynek);
+                    xlsSheetBudynki.Cells[budynekCounter, 10].Value = budynek.GetIdentyfikatorDzialkiForBudynek();
                     xlsSheetBudynki.Cells[budynekCounter, 11].Value = budynek.NazwaUlicy;
                     xlsSheetBudynki.Cells[budynekCounter, 12].Value = budynek.NumerPorzadkowy;
                     xlsSheetBudynki.Cells[budynekCounter, 13].Value = budynek.LiczbaKondygnacji;
@@ -234,107 +283,79 @@ namespace KWReader
 
                 foreach (Lokal lokal in kw.KwLokalList)
                 {
+                   
+                    foreach (OpisLokaluStruct izba in lokal.OpisLokalu)
+                    {
+                        lokalRodzajeIzb.Add(izba.RodzajIzby); // dodaj rodzaj lokalu do słownika
+                    }
+
+                    foreach (OpisPomieszczenPrzynaleznychStruct pomieszczenie in lokal.OpisPomieszczenPrzynaleznych)
+                    {
+                        lokalRodzajePomieszczen.Add(pomieszczenie.RodzajPomieszczenia);
+                    }
+
                     xlsSheetLokale.Cells[lokalCounter, 1].Value = kw.KwInformacjePodstawowe.NumerKsiegi;
                     xlsSheetLokale.Cells[lokalCounter, 2].Value = kw.KwZamkniecieKsiegi.ChwilaZamkniecia;
                     xlsSheetLokale.Cells[lokalCounter, 3].Value = kw.KwZamkniecieKsiegi.PodstawaZamkniecia;
 
                     xlsSheetLokale.Cells[lokalCounter, 4].Value = lokal.PolozenieMulti;
-                    xlsSheetLokale.Cells[lokalCounter, 5].Value = kw.GetPolozenie(lokal, PolozenieTyp.Gmina);
-                    xlsSheetLokale.Cells[lokalCounter, 6].Value = kw.GetPolozenie(lokal, PolozenieTyp.Miejscowosc);
-                    xlsSheetLokale.Cells[lokalCounter, 7].Value = kw.GetPolozenie(lokal, PolozenieTyp.Dzielnica);
+                    xlsSheetLokale.Cells[lokalCounter, 5].Value = lokal.GetPolozenie(kw.KwPolozenieList, PolozenieTyp.Gmina);
+                    xlsSheetLokale.Cells[lokalCounter, 6].Value = lokal.GetPolozenie(kw.KwPolozenieList, PolozenieTyp.Miejscowosc);
+                    xlsSheetLokale.Cells[lokalCounter, 7].Value = lokal.GetPolozenie(kw.KwPolozenieList, PolozenieTyp.Dzielnica);
 
                     xlsSheetLokale.Cells[lokalCounter, 8].Value = lokal.IdentyfikatorLokalu;
                     xlsSheetLokale.Cells[lokalCounter, 9].Value = lokal.Ulica;
                     xlsSheetLokale.Cells[lokalCounter, 10].Value = lokal.NumerBudynku;
                     xlsSheetLokale.Cells[lokalCounter, 11].Value = lokal.NumerLokalu;
                     xlsSheetLokale.Cells[lokalCounter, 12].Value = lokal.PrzeznaczenieLokalu;
-                    xlsSheetLokale.Cells[lokalCounter, 13].Value = lokal.OpisLokalu;
-                    xlsSheetLokale.Cells[lokalCounter, 14].Value = lokal.OpisPomieszczenPrzynależnych;
-                    xlsSheetLokale.Cells[lokalCounter, 15].Value = lokal.Kondygnacja;
-                    xlsSheetLokale.Cells[lokalCounter, 16].Value = lokal.Nieruchomosc;
-                    xlsSheetLokale.Cells[lokalCounter, 17].Value = lokal.Odrebnosc;
+                    xlsSheetLokale.Cells[lokalCounter, 13].Value = lokal.GetOpisLokalu();
+                    xlsSheetLokale.Cells[lokalCounter, 14].Value = lokal.LiczbaIzb;
+                    xlsSheetLokale.Cells[lokalCounter, 15].Value = lokal.GetOpisPomieszczenPrzynaleznych();
+                    xlsSheetLokale.Cells[lokalCounter, 16].Value = lokal.GetOpisPomieszczenPrzynaleznychPiwnica();
+                    xlsSheetLokale.Cells[lokalCounter, 17].Value = lokal.GetOpisPomieszczenPrzynaleznychGaraz();
+                    xlsSheetLokale.Cells[lokalCounter, 18].Value = lokal.GetOpisPomieszczenPrzynaleznychPostoj();
+                    xlsSheetLokale.Cells[lokalCounter, 19].Value = lokal.GetOpisPomieszczenPrzynaleznychStrych();
+                    xlsSheetLokale.Cells[lokalCounter, 20].Value = lokal.GetOpisPomieszczenPrzynaleznychKomorka();
+                    xlsSheetLokale.Cells[lokalCounter, 21].Value = lokal.GetOpisPomieszczenPrzynaleznychInne();
+                    xlsSheetLokale.Cells[lokalCounter, 22].Value = lokal.Kondygnacja;
+                    xlsSheetLokale.Cells[lokalCounter, 23].Value = lokal.Nieruchomosc;
+                    xlsSheetLokale.Cells[lokalCounter, 24].Value = lokal.Odrebnosc;
 
+                    xlsSheetLokale.Cells[lokalCounter, 25].Value = kw.KwObszar.ObszarHa;
 
                     lokalCounter++;
                 }
 
-                // dodaj liste błedów danej kw do listy globalnej
-                listaLog.Add(file, kw.KwLog);
-
-                if (kw.KwLog.Count != 0)
-                {
-                    StreamWriter logFile = new StreamWriter(new FileStream(file.Substring(0, file.LastIndexOf(".", StringComparison.Ordinal)) + ".log", FileMode.Create), Encoding.UTF8);
-
-                    foreach (string log in kw.KwLog)
-                    {
-                        logFile.WriteLine(log);
-                    }
-
-                    logFile.Close();
-                }
-
             }
 
             // ------------------------------------------------------------------------------------
-            // lista ksiąg które mają działki
-            // ------------------------------------------------------------------------------------
-            StreamWriter outputFile = new StreamWriter(new FileStream(args[0].TrimEnd('\\') + "\\!listaKW_Dzialki.txt", FileMode.Create), Encoding.UTF8);
-            foreach (string ksiega in listaKwDzialki)
+            
+            lokalRodzajeIzb = lokalRodzajeIzb.Distinct().ToList();
+            lokalRodzajeIzb.Sort();
+
+            ExcelWorksheet xlsSheetLokaleIzby = xlsWorkbook.Workbook.Worksheets.Add("LokaleIzby");
+
+            xlsSheetLokaleIzby.Cells[1, 1].Value = "RodzajIzby";
+
+            for (int i = 0; i < lokalRodzajeIzb.Count; i++)
             {
-                outputFile.WriteLine(ksiega);
+                xlsSheetLokaleIzby.Cells[i + 2, 1].Value = lokalRodzajeIzb[i];
             }
-            outputFile.Close();
-            // ------------------------------------------------------------------------------------
 
             // ------------------------------------------------------------------------------------
-            // lista ksiąg które mają budynki
-            // ------------------------------------------------------------------------------------
-            outputFile = new StreamWriter(new FileStream(args[0].TrimEnd('\\') + "\\!listaKW_Budynki.txt", FileMode.Create), Encoding.UTF8);
-            foreach (string ksiega in listaKwBudynki)
+
+            lokalRodzajePomieszczen = lokalRodzajePomieszczen.Distinct().ToList();
+            lokalRodzajePomieszczen.Sort();
+
+            ExcelWorksheet xlsSheetLokalePomieszczenia = xlsWorkbook.Workbook.Worksheets.Add("LokalePomieszczenia");
+
+            xlsSheetLokalePomieszczenia.Cells[1, 1].Value = "RodzajPomieszczenia";
+
+            for (int i = 0; i < lokalRodzajePomieszczen.Count; i++)
             {
-                outputFile.WriteLine(ksiega);
+                xlsSheetLokalePomieszczenia.Cells[i + 2, 1].Value = lokalRodzajePomieszczen[i];
             }
-            outputFile.Close();
-            // ------------------------------------------------------------------------------------
-
-            // ------------------------------------------------------------------------------------
-            // lista ksiąg które mają lokale
-            // ------------------------------------------------------------------------------------
-            outputFile = new StreamWriter(new FileStream(args[0].TrimEnd('\\') + "\\!listaKW_Lokale.txt", FileMode.Create), Encoding.UTF8);
-            foreach (string ksiega in listaKwLokale)
-            {
-                outputFile.WriteLine(ksiega);
-            }
-            outputFile.Close();
-            // ------------------------------------------------------------------------------------
-
-            // ------------------------------------------------------------------------------------
-            // lista ksiąg zamkniętych
-            // ------------------------------------------------------------------------------------
-            outputFile = new StreamWriter(new FileStream(args[0].TrimEnd('\\') + "\\!listaKW_Zamkniete.txt", FileMode.Create), Encoding.UTF8);
-            foreach (string ksiega in listaKwZamkniete)
-            {
-                outputFile.WriteLine(ksiega);
-            }
-            outputFile.Close();
-            // ------------------------------------------------------------------------------------
-
-            // ------------------------------------------------------------------------------------
-            // lista danych dla pliku log
-            // ------------------------------------------------------------------------------------
-            outputFile = new StreamWriter(new FileStream(args[0].TrimEnd('\\') + "\\!listaKW_LOG.csv", FileMode.Create), Encoding.UTF8);
-
-            outputFile.WriteLine("NazwaPliku;Rubryka;Pole;Opis");
-
-            foreach (KeyValuePair<string, List<string>> loglist in listaLog)
-            {
-                foreach (string logText in loglist.Value)
-                {
-                    outputFile.WriteLine(loglist.Key + ";" + logText );
-                }
-
-            }
-            outputFile.Close();
+            
             // ------------------------------------------------------------------------------------
 
             Console.WriteLine("Formatowanie arkusza KW...");
@@ -344,10 +365,9 @@ namespace KWReader
             xlsSheetKw.Cells.Style.Font.Size = 10;
             xlsSheetKw.Cells.AutoFitColumns(0);
 
-
             Console.WriteLine("Formatowanie arkusza działek...");
 
-            xlsSheetDzialki.Cells["A1:P" + Convert.ToString(dzialkaCounter - 1)].AutoFilter = true;
+            xlsSheetDzialki.Cells["A1:Q" + Convert.ToString(dzialkaCounter - 1)].AutoFilter = true;
             xlsSheetDzialki.View.FreezePanes(2, 2);
             xlsSheetDzialki.Cells.Style.Font.Size = 10;
             xlsSheetDzialki.Cells.AutoFitColumns(0);
@@ -364,15 +384,101 @@ namespace KWReader
 
             Console.WriteLine("Formatowanie arkusza lokali...");
 
-            xlsSheetLokale.Cells["A1:R" + Convert.ToString(lokalCounter - 1)].AutoFilter = true;
+            xlsSheetLokale.Cells["A1:Y" + Convert.ToString(lokalCounter - 1)].AutoFilter = true;
             xlsSheetLokale.View.FreezePanes(2, 2);
             xlsSheetLokale.Cells.Style.Font.Size = 10;
             xlsSheetLokale.Cells.AutoFitColumns(0);
             xlsSheetLokale.Column(3).Width = 24;
+            xlsSheetLokale.Column(13).Width = 30;
+            xlsSheetLokale.Column(15).Width = 30;
+            xlsSheetLokale.Column(16).Width = 30;
+            xlsSheetLokale.Column(17).Width = 30;
+            xlsSheetLokale.Column(18).Width = 30;
+            xlsSheetLokale.Column(19).Width = 30;
+            xlsSheetLokale.Column(20).Width = 30;
+            xlsSheetLokale.Column(21).Width = 30;
+
+            Console.WriteLine("Formatowanie arkusza izb lokali...");
+
+            xlsSheetLokaleIzby.Cells["A1:A" + Convert.ToString(lokalRodzajeIzb.Count + 1)].AutoFilter = true;
+            xlsSheetLokaleIzby.View.FreezePanes(2, 2);
+            xlsSheetLokaleIzby.Cells.Style.Font.Size = 10;
+            xlsSheetLokaleIzby.Cells.AutoFitColumns(0);
+
+            Console.WriteLine("Formatowanie arkusza pomieszczeń przynaleznych do lokali...");
+
+            xlsSheetLokalePomieszczenia.Cells["A1:A" + Convert.ToString(lokalRodzajePomieszczen.Count + 1)].AutoFilter = true;
+            xlsSheetLokalePomieszczenia.View.FreezePanes(2, 2);
+            xlsSheetLokalePomieszczenia.Cells.Style.Font.Size = 10;
+            xlsSheetLokalePomieszczenia.Cells.AutoFitColumns(0);
 
             Console.WriteLine("Zapisywanie pliku...");
 
             xlsWorkbook.Save();
+
+            Console.WriteLine("Zapis logów przetarzania KW...");
+
+            // ------------------------------------------------------------------------------------
+            // lista ksiąg które mają działki
+            // ------------------------------------------------------------------------------------
+            StreamWriter outputFile = new StreamWriter(new FileStream(args[0].TrimEnd('\\') + "\\wynik\\KW_Dzialki.txt", FileMode.Create), Encoding.UTF8);
+            foreach (string ksiega in listaKwDzialki)
+            {
+                outputFile.WriteLine(ksiega);
+            }
+            outputFile.Close();
+            // ------------------------------------------------------------------------------------
+
+            // ------------------------------------------------------------------------------------
+            // lista ksiąg które mają budynki
+            // ------------------------------------------------------------------------------------
+            outputFile = new StreamWriter(new FileStream(args[0].TrimEnd('\\') + "\\wynik\\KW_Budynki.txt", FileMode.Create), Encoding.UTF8);
+            foreach (string ksiega in listaKwBudynki)
+            {
+                outputFile.WriteLine(ksiega);
+            }
+            outputFile.Close();
+            // ------------------------------------------------------------------------------------
+
+            // ------------------------------------------------------------------------------------
+            // lista ksiąg które mają lokale
+            // ------------------------------------------------------------------------------------
+            outputFile = new StreamWriter(new FileStream(args[0].TrimEnd('\\') + "\\wynik\\KW_Lokale.txt", FileMode.Create), Encoding.UTF8);
+            foreach (string ksiega in listaKwLokale)
+            {
+                outputFile.WriteLine(ksiega);
+            }
+            outputFile.Close();
+            // ------------------------------------------------------------------------------------
+
+            // ------------------------------------------------------------------------------------
+            // lista ksiąg zamkniętych
+            // ------------------------------------------------------------------------------------
+            outputFile = new StreamWriter(new FileStream(args[0].TrimEnd('\\') + "\\wynik\\KW_Zamkniete.txt", FileMode.Create), Encoding.UTF8);
+            foreach (string ksiega in listaKwZamkniete)
+            {
+                outputFile.WriteLine(ksiega);
+            }
+            outputFile.Close();
+            // ------------------------------------------------------------------------------------
+
+            // ------------------------------------------------------------------------------------
+            // lista danych dla pliku log
+            // ------------------------------------------------------------------------------------
+            outputFile = new StreamWriter(new FileStream(args[0].TrimEnd('\\') + "\\wynik\\raport.csv", FileMode.Create), Encoding.UTF8);
+
+            outputFile.WriteLine("NazwaPliku;Rubryka;Pole;Opis");
+
+            foreach (KeyValuePair<string, List<string>> loglist in listaLog)
+            {
+                foreach (string logText in loglist.Value)
+                {
+                    outputFile.WriteLine(loglist.Key + ";" + logText );
+                }
+
+            }
+            outputFile.Close();
+            // ------------------------------------------------------------------------------------
 
             Console.WriteLine("Gotowe!");
             Console.ReadKey();

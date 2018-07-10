@@ -1,4 +1,4 @@
-﻿namespace KW_Tools
+﻿namespace KWTools
 {
     public class Polozenie
     {

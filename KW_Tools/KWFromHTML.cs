@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Text;
 using HtmlAgilityPack;
 
-namespace KW_Tools
+namespace KWTools
 {
     /// <summary>
     /// Typ wyliczeniowy dla atrybutu położenia, wymagany dla funkcji zwracającej atrybut danego rodzaju
@@ -14,8 +17,17 @@ namespace KW_Tools
     /// </summary>
     public class KwFromHtml
     {
+        private readonly List<string> _lokalRodzajeIzba = new List<string>();
+        private readonly List<string> _lokalRodzajePiwnica = new List<string>();
+        private readonly List<string> _lokalRodzajeGaraz = new List<string>();
+        private readonly List<string> _lokalRodzajePostoj = new List<string>();
+        private readonly List<string> _lokalRodzajeStrych = new List<string>();
+        private readonly List<string> _lokalRodzajeKomorka = new List<string>();
+        private readonly List<string> _lokalRodzajeInne = new List<string>();
+
         public string KwBody { get; set; }
         
+        public string File;
         public InformacjePodstawowe KwInformacjePodstawowe = new InformacjePodstawowe();
         public ZamkniecieKsiegi KwZamkniecieKsiegi = new ZamkniecieKsiegi();
         public List<Polozenie> KwPolozenieList = new List<Polozenie>();
@@ -23,6 +35,7 @@ namespace KW_Tools
         public List<Budynek> KwBudynekList = new List<Budynek>();
         public List<Lokal> KwLokalList = new List<Lokal>();
         public Obszar KwObszar = new Obszar();
+        public List<Udzial> KwUdzialList = new List<Udzial>();
 
         /// <summary>
         /// lista przechowująca błędy wychwycone podczas przetwarzania księgi wieczystej
@@ -36,6 +49,48 @@ namespace KW_Tools
         public KwFromHtml(string kwBody)
         {
             KwBody = kwBody;
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleIzby.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) _lokalRodzajeIzba.Add(iniFile.ReadLine());
+            }
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokalePiwnice.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) _lokalRodzajePiwnica.Add(iniFile.ReadLine());
+            }
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleGaraz.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) _lokalRodzajeGaraz.Add(iniFile.ReadLine());
+            }
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokalePostoj.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) _lokalRodzajePostoj.Add(iniFile.ReadLine());
+            }
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleStrych.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) _lokalRodzajeStrych.Add(iniFile.ReadLine());
+            }
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleKomorka.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) _lokalRodzajeKomorka.Add(iniFile.ReadLine());
+            }
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleInne.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) _lokalRodzajeInne.Add(iniFile.ReadLine());
+            }
+
+        }
+
+        public static string GetExecutingDirectoryName() 
+        { 
+            Uri location = new Uri(Assembly.GetEntryAssembly().GetName().CodeBase); 
+            return new FileInfo(location.AbsolutePath).Directory?.FullName; 
         }
 
         /// <summary>
@@ -829,11 +884,56 @@ namespace KW_Tools
                                     case "6. Opis lokalu":
                                         if (cells.Count == 2) // testowanie ilości komórek w wierszu
                                         {
-                                            kwLokal.OpisLokalu =  cells[i + 1].InnerText;
+                                            // jeśli opis lokalu jest zbudowane w postaci tabeli
+                                            if (cells[i + 1].InnerHtml.IndexOf("table", StringComparison.Ordinal) > 0)
+                                            {
+                                                HtmlNode htmlOpisLokaluTable = cells[i+1].SelectSingleNode("table");
+
+                                                HtmlNodeCollection htmlOpisLokaluRows = htmlOpisLokaluTable.SelectNodes("tr");
+
+                                                // jeśli tabela zawiera wiersze
+                                                if (htmlOpisLokaluRows != null)
+                                                {
+                                                    if( htmlOpisLokaluRows.Count % 2 != 0 ) throw new Exception();
+
+                                                    for (int j = 0; j < htmlOpisLokaluRows.Count; j = j + 2)
+                                                    {
+                                                        HtmlNodeCollection htmlOpisLokaluCells = htmlOpisLokaluRows[j].SelectNodes("td");
+
+                                                        string idIzby = htmlOpisLokaluCells[0].InnerText;
+                                                        if (htmlOpisLokaluCells[1].InnerText != "A: rodzaj izby") throw new Exception();
+                                                        string rodzajIzby = htmlOpisLokaluCells[3].InnerText;
+
+                                                        htmlOpisLokaluCells = htmlOpisLokaluRows[j+1].SelectNodes("td");
+
+                                                        if (htmlOpisLokaluCells[0].InnerText != "B: liczba izb") throw new Exception();
+                                                        string liczbaIzb = htmlOpisLokaluCells[2].InnerText;
+
+                                                        kwLokal.OpisLokalu.Add(new OpisLokaluStruct(idIzby, rodzajIzby, liczbaIzb));
+
+                                                        if (liczbaIzb == "- - -") liczbaIzb = "1";
+
+                                                        if (_lokalRodzajeIzba.Exists(x => x == rodzajIzby)) kwLokal.LiczbaIzb = kwLokal.LiczbaIzb + Convert.ToInt32(liczbaIzb);
+                                                    }
+
+                                                }
+                                                else // jeśli tabela nie ma wierszy
+                                                {
+                                                    kwLokal.OpisLokalu.Add(new OpisLokaluStruct("- - -", "- - -", "- - -")); 
+                                                    KwLog.Add("Podrubryka 1.4.4 - Lokal;6. Opis lokalu;Zadeklarowana tabela nie posiada wierszy.");
+                                                }
+                                            }
+                                            else // jeśli brak jest tabeli opisujące lokal
+                                            {
+                                                kwLokal.OpisLokalu.Add(new OpisLokaluStruct("- - -", "- - -", "- - -")); 
+                                                KwLog.Add("Podrubryka 1.4.4 - Lokal;6. Opis lokalu;Atrybut nie jest zbudowany w postaci tabeli: " + cells[i + 1].InnerText);
+                                            }
+
+
                                         }
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
-                                            kwLokal.OpisLokalu = "- - -";
+                                            kwLokal.OpisLokalu.Add(new OpisLokaluStruct("- - -", "- - -", "- - -")); 
                                             KwLog.Add("Podrubryka 1.4.4 - Lokal;6. Opis lokalu;Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
                                         }
 
@@ -842,11 +942,76 @@ namespace KW_Tools
                                     case "7. Opis pomieszczeń przynależnych":
                                         if (cells.Count == 2) // testowanie ilości komórek w wierszu
                                         {
-                                            kwLokal.OpisPomieszczenPrzynależnych =  cells[i + 1].InnerText;
+                                            // jeśli opis pomieszczeń jest zbudowane w postaci tabeli
+                                            if (cells[i + 1].InnerHtml.IndexOf("table", StringComparison.Ordinal) > 0)
+                                            {
+                                                HtmlNode htmlOpisPomieszczenPrzynaleznychTable = cells[i + 1].SelectSingleNode("table");
+
+                                                HtmlNodeCollection htmlOpisPomieszczenPrzynaleznychRows = htmlOpisPomieszczenPrzynaleznychTable.SelectNodes("tr");
+
+                                                // jeśli tabela zawiera wiersze
+                                                if (htmlOpisPomieszczenPrzynaleznychRows != null)
+                                                {
+                                                    if( htmlOpisPomieszczenPrzynaleznychRows.Count % 2 != 0 ) throw new Exception();
+
+                                                    for (int j = 0; j < htmlOpisPomieszczenPrzynaleznychRows.Count; j = j + 2)
+                                                    {
+                                                        HtmlNodeCollection htmlOpisPomieszczenPrzynaleznychCells = htmlOpisPomieszczenPrzynaleznychRows[j].SelectNodes("td");
+
+                                                        string idPomieszczenia = "";
+                                                        string rodzajPomieszczenia = "";
+
+                                                        if (htmlOpisPomieszczenPrzynaleznychCells.Count == 4)
+                                                        {
+                                                            idPomieszczenia = htmlOpisPomieszczenPrzynaleznychCells[0].InnerText;
+                                                            if (htmlOpisPomieszczenPrzynaleznychCells[1].InnerText != "A: rodzaj pomieszczenia") throw new Exception();
+                                                            rodzajPomieszczenia = htmlOpisPomieszczenPrzynaleznychCells[3].InnerText;
+                                                        }
+                                                        else
+                                                        {
+                                                            KwLog.Add("Podrubryka 1.4.4 - Lokal;7. Opis pomieszczeń przynależnych;Niezgodna liczba kolumn. Oczekiwana: 4, jest: " + htmlOpisPomieszczenPrzynaleznychCells.Count);
+                                                        }
+
+                                                        htmlOpisPomieszczenPrzynaleznychCells = htmlOpisPomieszczenPrzynaleznychRows[j+1].SelectNodes("td");
+
+                                                        string liczbaPomieszczen = "";
+
+                                                        if (htmlOpisPomieszczenPrzynaleznychCells.Count == 3)
+                                                        {
+                                                            if (htmlOpisPomieszczenPrzynaleznychCells[0].InnerText != "B: liczba pomieszczeń") throw new Exception();
+                                                            liczbaPomieszczen = htmlOpisPomieszczenPrzynaleznychCells[2].InnerText;
+                                                        }
+                                                        else
+                                                        {
+                                                            KwLog.Add("Podrubryka 1.4.4 - Lokal;7. Opis pomieszczeń przynależnych;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + htmlOpisPomieszczenPrzynaleznychCells.Count);
+                                                        }
+
+                                                        kwLokal.OpisPomieszczenPrzynaleznych.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
+
+                                                        if (_lokalRodzajePiwnica.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychPiwnica.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
+                                                        if (_lokalRodzajeGaraz.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychGaraz.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
+                                                        if (_lokalRodzajePostoj.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychPostoj.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
+                                                        if (_lokalRodzajeStrych.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychStrych.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
+                                                        if (_lokalRodzajeKomorka.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychKomorka.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
+                                                        if (_lokalRodzajeInne.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychInne.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
+                                                    }
+                                                }
+                                                else // jeśli tabela nie ma wierszy
+                                                {
+                                                    kwLokal.OpisPomieszczenPrzynaleznych.Add(new OpisPomieszczenPrzynaleznychStruct("- - -", "- - -", "- - -")); 
+                                                    KwLog.Add("Podrubryka 1.4.4 - Lokal;7. Opis pomieszczeń przynależnych;Zadeklarowana tabela nie posiada wierszy.");
+                                                }
+                                            }
+                                            else // jeśli brak jest tabeli opisującej pomieszczenia
+                                            {
+                                                kwLokal.OpisPomieszczenPrzynaleznych.Add(new OpisPomieszczenPrzynaleznychStruct("- - -", "- - -", "- - -")); 
+                                                KwLog.Add("Podrubryka 1.4.4 - Lokal;7. Opis pomieszczeń przynależnych;Atrybut nie jest zbudowany w postaci tabeli: " + cells[i + 1].InnerText);
+                                            }
+
                                         }
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
-                                            kwLokal.OpisPomieszczenPrzynależnych = "- - -";
+                                            kwLokal.OpisPomieszczenPrzynaleznych.Add(new OpisPomieszczenPrzynaleznychStruct("- - -", "- - -", "- - -"));
                                             KwLog.Add("Podrubryka 1.4.4 - Lokal;7. Opis pomieszczeń przynależnych;Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
                                         }
 
@@ -950,267 +1115,73 @@ namespace KW_Tools
                     }
                 }
 
+
+                // --------------------------------------------------------------------------------
+                // Rubryka 2.2 - Właściciel
+                // --------------------------------------------------------------------------------
+
+                // szukaj tabeli z rubryka udziału
+                if (tableNode.InnerText.IndexOf("Rubryka 2.2 - Właściciel", StringComparison.Ordinal) > 0)
+                {
+                    HtmlNodeCollection rows = tableNode.SelectNodes("tr");
+
+                    // tabela opisująca właścicieli ma więcej niż dwa wiersze
+                    if (rows.Count > 2)
+                    {
+                        int udzialRow;          // Podrubryka 2.2.1 - Udział
+                        int skarbPanstwaRow;    // Podrubryka 2.2.2 - Skarb Państwa
+                        int samorzadRow;        // Podrubryka 2.2.3 - jednostka samorządu terytorialnego (związek międzygminny)
+                        int innaOsobaRow;       // Podrubryka 2.2.4 - inna osoba prawna lub jednostka organizacyjna niebędąca osobą prawną
+                        int osobaFizycznaRow;   // Podrubryka 2.2.5 - Osoba fizyczna
+
+                        bool udzialExists = false;
+                        bool skarbPanstaExists = false;
+                        bool samorzadExists = false;
+                        bool innaOsobaExists = false;
+                        bool osobaFizycznaExists = false;
+                     
+                        for (int i = 0; i < rows.Count - 1; i++)
+                        {
+                            if (rows[i].InnerText.IndexOf("Podrubryka 2.2.1", StringComparison.Ordinal) > 0)
+                            {
+                                udzialRow = i;
+                                udzialExists = true;
+                            } 
+                            else if (rows[i].InnerText.IndexOf("Podrubryka 2.2.2", StringComparison.Ordinal) > 0)
+                            {
+                                skarbPanstwaRow = i;
+                                skarbPanstaExists = true;
+                            } 
+                            else if (rows[i].InnerText.IndexOf("Podrubryka 2.2.3", StringComparison.Ordinal) > 0)
+                            {
+                                samorzadRow = i;
+                                samorzadExists = true;
+                            } else if (rows[i].InnerText.IndexOf("Podrubryka 2.2.4", StringComparison.Ordinal) > 0)
+                            {
+                                innaOsobaRow = i;
+                                innaOsobaExists = true;
+                            } else if (rows[i].InnerText.IndexOf("Podrubryka 2.2.5", StringComparison.Ordinal) > 0)
+                            {
+                                osobaFizycznaRow = i;
+                                osobaFizycznaExists = true;
+                            }
+                        }
+
+                        // jeśli brak jest udziału wygeneruj wyjątek
+                        if (!udzialExists) throw new Exception();
+                        
+                    }
+                    else // jeśli tabela z właścicielami jest pusta
+                    {
+                        KwLog.Add("Rubryka 2.2 - Właściciel;;Brak wartości w tabeli Właściciel");
+                    }
+
+                }
+
             }
 
             return KwLog.Count;
         }
 
-        /// <summary>
-        /// metoda pobierająca ulicę z położenia przypisanego do danej działki
-        /// </summary>
-        /// <param name="dzialka">Obiekt działki, dla której ma być pobrana ulica</param>
-        /// <returns></returns>
-        public string GetUlicaForDzialka(Dzialka dzialka)
-        {
-            string wynik = "";
-
-            if (dzialka.UliceList.Count == 1)
-            {
-                wynik =  dzialka.UliceList[0];
-            }
-            else
-            {
-                foreach (string ulica in dzialka.UliceList)
-                {
-                    wynik = wynik + ulica + ", ";
-                }
-
-                wynik = wynik.Substring(0, wynik.Length - 2);
-            }
-
-            return wynik;
-
-        }
-
-        public string GetIdentyfikatorDzialkiForBudynek(Budynek budynek)
-        {
-            string wynik = "";
-
-            if (budynek.IdentyfikatorDzialkiList.Count == 1)
-            {
-                wynik =  budynek.IdentyfikatorDzialkiList[0];
-            }
-            else
-            {
-                foreach (string identyfikator in budynek.IdentyfikatorDzialkiList)
-                {
-                    wynik = wynik + identyfikator + ", ";
-                }
-
-                wynik = wynik.Substring(0, wynik.Length - 2);
-            }
-
-            return wynik;
-
-        }
-
-        public string GetPolozenie(object obiekt, PolozenieTyp atrybut)
-        {
-            string wynik = "";
-
-            if (obiekt.GetType() == typeof(Dzialka))
-            {
-                Dzialka dzialka = (Dzialka) obiekt;
-
-                if (dzialka.PolozenieList.Count == 1)
-                {
-                    try
-                    {
-                        switch (atrybut)
-                        {
-                            case PolozenieTyp.Wojewodztwo:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(dzialka.PolozenieList[0])).Wojewodztwo;
-                                break;
-                            case PolozenieTyp.Powiat:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(dzialka.PolozenieList[0])).Powiat;
-                                break;
-                            case PolozenieTyp.Gmina:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(dzialka.PolozenieList[0])).Gmina;
-                                break;
-                            case PolozenieTyp.Miejscowosc:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(dzialka.PolozenieList[0])).Miejscowosc;
-                                break;
-                            case PolozenieTyp.Dzielnica:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(dzialka.PolozenieList[0])).Dzielnica;
-                                break;                    }
-                    }
-                    catch (Exception)
-                    {
-                        wynik =  "- - -";
-                    }
-                }
-                else
-                {
-                    foreach (string polozenie in dzialka.PolozenieList)
-                    {
-                        try
-                        {
-                            switch (atrybut)
-                            {
-                                case PolozenieTyp.Wojewodztwo:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Wojewodztwo + ", ";
-                                    break;
-                                case PolozenieTyp.Powiat:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Powiat + ", ";
-                                    break;
-                                case PolozenieTyp.Gmina:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Gmina + ", ";
-                                    break;
-                                case PolozenieTyp.Miejscowosc:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Miejscowosc + ", ";
-                                    break;
-                                case PolozenieTyp.Dzielnica:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Dzielnica + ", ";
-                                    break;
-                            }
-                            
-                        }
-                        catch (Exception)
-                        {
-                            wynik = wynik  + "- - -" + ", ";
-                        }
-                    }
-
-                    wynik = wynik.Substring(0, wynik.Length - 2);
-                }                    
-            }
-
-            if (obiekt.GetType() == typeof(Budynek))
-            {
-                Budynek budynek = (Budynek) obiekt;
-
-                if (budynek.PolozenieList.Count == 1)
-                {
-                    try
-                    {
-                        switch (atrybut)
-                        {
-                            case PolozenieTyp.Wojewodztwo:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(budynek.PolozenieList[0])).Wojewodztwo;
-                                break;
-                            case PolozenieTyp.Powiat:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(budynek.PolozenieList[0])).Powiat;
-                                break;
-                            case PolozenieTyp.Gmina:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(budynek.PolozenieList[0])).Gmina;
-                                break;
-                            case PolozenieTyp.Miejscowosc:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(budynek.PolozenieList[0])).Miejscowosc;
-                                break;
-                            case PolozenieTyp.Dzielnica:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(budynek.PolozenieList[0])).Dzielnica;
-                                break;                    }
-                    }
-                    catch (Exception)
-                    {
-                        wynik =  "- - -";
-                    }
-                }
-                else
-                {
-                    foreach (string polozenie in budynek.PolozenieList)
-                    {
-                        try
-                        {
-                            switch (atrybut)
-                            {
-                                case PolozenieTyp.Wojewodztwo:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Wojewodztwo + ", ";
-                                    break;
-                                case PolozenieTyp.Powiat:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Powiat + ", ";
-                                    break;
-                                case PolozenieTyp.Gmina:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Gmina + ", ";
-                                    break;
-                                case PolozenieTyp.Miejscowosc:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Miejscowosc + ", ";
-                                    break;
-                                case PolozenieTyp.Dzielnica:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Dzielnica + ", ";
-                                    break;
-                            }
-                            
-                        }
-                        catch (Exception)
-                        {
-                            wynik = wynik  + "- - -" + ", ";
-                        }
-                    }
-
-                    wynik = wynik.Substring(0, wynik.Length - 2);
-                }                    
-            }
-
-            if (obiekt.GetType() == typeof(Lokal))
-            {
-                Lokal lokal = (Lokal) obiekt;
-
-                if (lokal.PolozenieList.Count == 1)
-                {
-                    try
-                    {
-                        switch (atrybut)
-                        {
-                            case PolozenieTyp.Wojewodztwo:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(lokal.PolozenieList[0])).Wojewodztwo;
-                                break;
-                            case PolozenieTyp.Powiat:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(lokal.PolozenieList[0])).Powiat;
-                                break;
-                            case PolozenieTyp.Gmina:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(lokal.PolozenieList[0])).Gmina;
-                                break;
-                            case PolozenieTyp.Miejscowosc:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(lokal.PolozenieList[0])).Miejscowosc;
-                                break;
-                            case PolozenieTyp.Dzielnica:
-                                wynik = KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(lokal.PolozenieList[0])).Dzielnica;
-                                break;                    }
-                    }
-                    catch (Exception)
-                    {
-                        wynik =  "- - -";
-                    }
-                }
-                else
-                {
-                    foreach (string polozenie in lokal.PolozenieList)
-                    {
-                        try
-                        {
-                            switch (atrybut)
-                            {
-                                case PolozenieTyp.Wojewodztwo:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Wojewodztwo + ", ";
-                                    break;
-                                case PolozenieTyp.Powiat:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Powiat + ", ";
-                                    break;
-                                case PolozenieTyp.Gmina:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Gmina + ", ";
-                                    break;
-                                case PolozenieTyp.Miejscowosc:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Miejscowosc + ", ";
-                                    break;
-                                case PolozenieTyp.Dzielnica:
-                                    wynik = wynik + KwPolozenieList.Find(x => x.NumerPorzadkowy.Contains(polozenie)).Dzielnica + ", ";
-                                    break;
-                            }
-                            
-                        }
-                        catch (Exception)
-                        {
-                            wynik = wynik  + "- - -" + ", ";
-                        }
-                    }
-
-                    wynik = wynik.Substring(0, wynik.Length - 2);
-                }                    
-            }
-
-
-            return wynik;
-        }
     }
 }
