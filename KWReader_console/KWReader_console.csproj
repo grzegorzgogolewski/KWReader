@@ -80,6 +80,10 @@
       <Project>{5f4ba865-facf-4897-80d7-39f4146af6a7}</Project>
       <Name>KWTools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Tools\Tools.csproj">
+      <Project>{70b19a7e-884d-41c2-9e2a-71989adc9e2e}</Project>
+      <Name>Tools</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
@@ -103,7 +107,10 @@
     <None Include="Resources\gml.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Konfiguracja\LokaleIzby.txt">
+    <Content Include="Konfiguracja\LokaleIzbyNie.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Konfiguracja\LokaleIzbyTak.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Konfiguracja\LokaleGaraz.txt">

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using KWTools;
 
 namespace KWTools
 {
@@ -23,12 +22,14 @@ namespace KWTools
         public string IdPomieszczenia;
         public string RodzajPomieszczenia;
         public string LiczbaPomieszczen;
+        public string PowierzchniaPomieszczenia;
 
-        public OpisPomieszczenPrzynaleznychStruct(string idPomieszczenia, string rodzajPomieszczenia, string liczbaPomieszczen)
+        public OpisPomieszczenPrzynaleznychStruct(string idPomieszczenia, string rodzajPomieszczenia, string liczbaPomieszczen, string powierzchniaPom)
         {
             IdPomieszczenia = idPomieszczenia;
             RodzajPomieszczenia = rodzajPomieszczenia;
             LiczbaPomieszczen = liczbaPomieszczen;
+            PowierzchniaPomieszczenia = powierzchniaPom;
         }
     }
 
@@ -63,7 +64,8 @@ namespace KWTools
                 wynik = wynik + izba.RodzajIzby + ": " + izba.LiczbaIzb + "; ";
             }
 
-            wynik = wynik.TrimEnd('\n').TrimEnd('\r');
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
+
 
             return wynik;
         }
@@ -77,7 +79,7 @@ namespace KWTools
                 wynik = wynik + pomieszczenie.RodzajPomieszczenia + "; ";
             }
 
-            wynik = wynik.TrimEnd('\n').TrimEnd('\r');
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
 
             return wynik;
         }
@@ -91,10 +93,27 @@ namespace KWTools
                 wynik = wynik + pomieszczenie.RodzajPomieszczenia + "; ";
             }
 
-            wynik = wynik.TrimEnd('\n').TrimEnd('\r');
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
+
 
             return wynik;
         }
+
+        public string GetOpisPomieszczenPrzynaleznychPiwnicaPow()
+        {
+            string wynik = "";
+
+            foreach (OpisPomieszczenPrzynaleznychStruct pomieszczenie in OpisPomieszczenPrzynaleznychPiwnica)
+            {
+                if (pomieszczenie.PowierzchniaPomieszczenia != "") wynik = wynik + pomieszczenie.PowierzchniaPomieszczenia + "; ";
+            }
+
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
+
+
+            return wynik;
+        }
+
 
         public string GetOpisPomieszczenPrzynaleznychGaraz()
         {
@@ -105,7 +124,23 @@ namespace KWTools
                 wynik = wynik + pomieszczenie.RodzajPomieszczenia + "; ";
             }
 
-            wynik = wynik.TrimEnd('\n').TrimEnd('\r');
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
+
+
+            return wynik;
+        }
+
+        public string GetOpisPomieszczenPrzynaleznychGarazPow()
+        {
+            string wynik = "";
+
+            foreach (OpisPomieszczenPrzynaleznychStruct pomieszczenie in OpisPomieszczenPrzynaleznychGaraz)
+            {
+                if (pomieszczenie.PowierzchniaPomieszczenia != "") wynik = wynik + pomieszczenie.PowierzchniaPomieszczenia + "; ";
+            }
+
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
+
 
             return wynik;
         }
@@ -119,7 +154,23 @@ namespace KWTools
                 wynik = wynik + pomieszczenie.RodzajPomieszczenia + "; ";
             }
 
-            wynik = wynik.TrimEnd('\n').TrimEnd('\r');
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
+
+
+            return wynik;
+        }
+
+        public string GetOpisPomieszczenPrzynaleznychPostojPow()
+        {
+            string wynik = "";
+
+            foreach (OpisPomieszczenPrzynaleznychStruct pomieszczenie in OpisPomieszczenPrzynaleznychPostoj)
+            {
+                if (pomieszczenie.PowierzchniaPomieszczenia != "") wynik = wynik + pomieszczenie.PowierzchniaPomieszczenia + "; ";
+            }
+
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
+
 
             return wynik;
         }
@@ -133,7 +184,23 @@ namespace KWTools
                 wynik = wynik + pomieszczenie.RodzajPomieszczenia + "; ";
             }
 
-            wynik = wynik.TrimEnd('\n').TrimEnd('\r');
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
+
+
+            return wynik;
+        }
+
+        public string GetOpisPomieszczenPrzynaleznychStrychPow()
+        {
+            string wynik = "";
+
+            foreach (OpisPomieszczenPrzynaleznychStruct pomieszczenie in OpisPomieszczenPrzynaleznychStrych)
+            {
+                if (pomieszczenie.PowierzchniaPomieszczenia != "") wynik = wynik + pomieszczenie.PowierzchniaPomieszczenia + "; ";
+            }
+
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
+
 
             return wynik;
         }
@@ -147,7 +214,23 @@ namespace KWTools
                 wynik = wynik + pomieszczenie.RodzajPomieszczenia + "; ";
             }
 
-            wynik = wynik.TrimEnd('\n').TrimEnd('\r');
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
+
+
+            return wynik;
+        }
+
+        public string GetOpisPomieszczenPrzynaleznychKomorkaPow()
+        {
+            string wynik = "";
+
+            foreach (OpisPomieszczenPrzynaleznychStruct pomieszczenie in OpisPomieszczenPrzynaleznychKomorka)
+            {
+                if (pomieszczenie.PowierzchniaPomieszczenia != "") wynik = wynik + pomieszczenie.PowierzchniaPomieszczenia + "; ";
+            }
+
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
+
 
             return wynik;
         }
@@ -161,7 +244,23 @@ namespace KWTools
                 wynik = wynik + pomieszczenie.RodzajPomieszczenia + "; ";
             }
 
-            wynik = wynik.TrimEnd('\n').TrimEnd('\r');
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
+
+
+            return wynik;
+        }
+
+        public string GetOpisPomieszczenPrzynaleznychInnePow()
+        {
+            string wynik = "";
+
+            foreach (OpisPomieszczenPrzynaleznychStruct pomieszczenie in OpisPomieszczenPrzynaleznychInne)
+            {
+                if (pomieszczenie.PowierzchniaPomieszczenia != "") wynik = wynik + pomieszczenie.PowierzchniaPomieszczenia + "; ";
+            }
+
+            wynik = wynik.TrimEnd(' ').TrimEnd(';');
+
 
             return wynik;
         }

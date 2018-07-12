@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text;
+using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 
 namespace KWTools
@@ -17,14 +15,6 @@ namespace KWTools
     /// </summary>
     public class KwFromHtml
     {
-        private readonly List<string> _lokalRodzajeIzba = new List<string>();
-        private readonly List<string> _lokalRodzajePiwnica = new List<string>();
-        private readonly List<string> _lokalRodzajeGaraz = new List<string>();
-        private readonly List<string> _lokalRodzajePostoj = new List<string>();
-        private readonly List<string> _lokalRodzajeStrych = new List<string>();
-        private readonly List<string> _lokalRodzajeKomorka = new List<string>();
-        private readonly List<string> _lokalRodzajeInne = new List<string>();
-
         public string KwBody { get; set; }
         
         public string File;
@@ -35,62 +25,18 @@ namespace KWTools
         public List<Budynek> KwBudynekList = new List<Budynek>();
         public List<Lokal> KwLokalList = new List<Lokal>();
         public Obszar KwObszar = new Obszar();
-        public List<Udzial> KwUdzialList = new List<Udzial>();
 
         /// <summary>
         /// lista przechowująca błędy wychwycone podczas przetwarzania księgi wieczystej
         /// </summary>
         public List<string> KwLog = new List<string>();
 
-        /// <summary>
-        /// konstruktor klasy parsującej treść księgi wieczystej
-        /// </summary>
-        /// <param name="kwBody">przechowuje treść księgi wieczystej</param>
-        public KwFromHtml(string kwBody)
+        private readonly LokalSlowniki _lokalSlowniki;
+
+        public KwFromHtml(string kwBody, LokalSlowniki lokalSlowniki)
         {
             KwBody = kwBody;
-
-            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleIzby.txt", FileMode.Open), Encoding.UTF8))
-            {
-                while (iniFile.Peek() >= 0) _lokalRodzajeIzba.Add(iniFile.ReadLine());
-            }
-
-            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokalePiwnice.txt", FileMode.Open), Encoding.UTF8))
-            {
-                while (iniFile.Peek() >= 0) _lokalRodzajePiwnica.Add(iniFile.ReadLine());
-            }
-
-            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleGaraz.txt", FileMode.Open), Encoding.UTF8))
-            {
-                while (iniFile.Peek() >= 0) _lokalRodzajeGaraz.Add(iniFile.ReadLine());
-            }
-
-            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokalePostoj.txt", FileMode.Open), Encoding.UTF8))
-            {
-                while (iniFile.Peek() >= 0) _lokalRodzajePostoj.Add(iniFile.ReadLine());
-            }
-
-            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleStrych.txt", FileMode.Open), Encoding.UTF8))
-            {
-                while (iniFile.Peek() >= 0) _lokalRodzajeStrych.Add(iniFile.ReadLine());
-            }
-
-            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleKomorka.txt", FileMode.Open), Encoding.UTF8))
-            {
-                while (iniFile.Peek() >= 0) _lokalRodzajeKomorka.Add(iniFile.ReadLine());
-            }
-
-            using (StreamReader iniFile = new StreamReader(new FileStream(GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleInne.txt", FileMode.Open), Encoding.UTF8))
-            {
-                while (iniFile.Peek() >= 0) _lokalRodzajeInne.Add(iniFile.ReadLine());
-            }
-
-        }
-
-        public static string GetExecutingDirectoryName() 
-        { 
-            Uri location = new Uri(Assembly.GetEntryAssembly().GetName().CodeBase); 
-            return new FileInfo(location.AbsolutePath).Directory?.FullName; 
+            _lokalSlowniki = lokalSlowniki;
         }
 
         /// <summary>
@@ -913,7 +859,7 @@ namespace KWTools
 
                                                         if (liczbaIzb == "- - -") liczbaIzb = "1";
 
-                                                        if (_lokalRodzajeIzba.Exists(x => x == rodzajIzby)) kwLokal.LiczbaIzb = kwLokal.LiczbaIzb + Convert.ToInt32(liczbaIzb);
+                                                        if (_lokalSlowniki.RodzajIzbaTak.Exists(x => x == rodzajIzby)) kwLokal.LiczbaIzb = kwLokal.LiczbaIzb + Convert.ToInt32(liczbaIzb);
                                                     }
 
                                                 }
@@ -960,12 +906,36 @@ namespace KWTools
 
                                                         string idPomieszczenia = "";
                                                         string rodzajPomieszczenia = "";
+                                                        string powierzchniaPomieszczenia = "";
 
                                                         if (htmlOpisPomieszczenPrzynaleznychCells.Count == 4)
                                                         {
                                                             idPomieszczenia = htmlOpisPomieszczenPrzynaleznychCells[0].InnerText;
                                                             if (htmlOpisPomieszczenPrzynaleznychCells[1].InnerText != "A: rodzaj pomieszczenia") throw new Exception();
                                                             rodzajPomieszczenia = htmlOpisPomieszczenPrzynaleznychCells[3].InnerText;
+
+                                                            string pattern = @"O POW\.\s*(\d+)(\.?|,?)(\d*)\s*M2";
+
+                                                            if (Regex.IsMatch(rodzajPomieszczenia, pattern))
+                                                            {
+                                                                int start = rodzajPomieszczenia.IndexOf("O POW.", StringComparison.Ordinal) + 6;
+                                                                int koniec = rodzajPomieszczenia.IndexOf("M2", StringComparison.Ordinal);
+                                                                string powierzchnia = rodzajPomieszczenia.Substring(start, koniec - start).Replace(",",".");
+
+                                                                powierzchniaPomieszczenia = $"{Convert.ToDouble(powierzchnia):0.00}";
+                                                            }
+
+                                                            pattern = @"O POWIERZCHNI\s*(\d+)(\.?|,?)(\d*)\s*M2";
+
+                                                            if (Regex.IsMatch(rodzajPomieszczenia, pattern))
+                                                            {
+                                                                int start = rodzajPomieszczenia.IndexOf("O POWIERZCHNI", StringComparison.Ordinal) + 13;
+                                                                int koniec = rodzajPomieszczenia.IndexOf("M2", StringComparison.Ordinal);
+                                                                string powierzchnia = rodzajPomieszczenia.Substring(start, koniec - start).Replace(",",".");
+
+                                                                powierzchniaPomieszczenia = $"{Convert.ToDouble(powierzchnia):0.00}";
+                                                            }
+
                                                         }
                                                         else
                                                         {
@@ -986,32 +956,32 @@ namespace KWTools
                                                             KwLog.Add("Podrubryka 1.4.4 - Lokal;7. Opis pomieszczeń przynależnych;Niezgodna liczba kolumn. Oczekiwana: 3, jest: " + htmlOpisPomieszczenPrzynaleznychCells.Count);
                                                         }
 
-                                                        kwLokal.OpisPomieszczenPrzynaleznych.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
+                                                        kwLokal.OpisPomieszczenPrzynaleznych.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen, powierzchniaPomieszczenia));
 
-                                                        if (_lokalRodzajePiwnica.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychPiwnica.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
-                                                        if (_lokalRodzajeGaraz.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychGaraz.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
-                                                        if (_lokalRodzajePostoj.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychPostoj.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
-                                                        if (_lokalRodzajeStrych.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychStrych.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
-                                                        if (_lokalRodzajeKomorka.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychKomorka.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
-                                                        if (_lokalRodzajeInne.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychInne.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen));
+                                                        if (_lokalSlowniki.RodzajPiwnica.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychPiwnica.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen, powierzchniaPomieszczenia));
+                                                        if (_lokalSlowniki.RodzajGaraz.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychGaraz.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen, powierzchniaPomieszczenia));
+                                                        if (_lokalSlowniki.RodzajPostoj.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychPostoj.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen, powierzchniaPomieszczenia));
+                                                        if (_lokalSlowniki.RodzajStrych.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychStrych.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen, powierzchniaPomieszczenia));
+                                                        if (_lokalSlowniki.RodzajKomorka.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychKomorka.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen, powierzchniaPomieszczenia));
+                                                        if (_lokalSlowniki.RodzajInne.Exists(x => x == rodzajPomieszczenia)) kwLokal.OpisPomieszczenPrzynaleznychInne.Add(new OpisPomieszczenPrzynaleznychStruct(idPomieszczenia, rodzajPomieszczenia, liczbaPomieszczen, powierzchniaPomieszczenia));
                                                     }
                                                 }
                                                 else // jeśli tabela nie ma wierszy
                                                 {
-                                                    kwLokal.OpisPomieszczenPrzynaleznych.Add(new OpisPomieszczenPrzynaleznychStruct("- - -", "- - -", "- - -")); 
+                                                    kwLokal.OpisPomieszczenPrzynaleznych.Add(new OpisPomieszczenPrzynaleznychStruct("- - -", "- - -", "- - -", "- - -")); 
                                                     KwLog.Add("Podrubryka 1.4.4 - Lokal;7. Opis pomieszczeń przynależnych;Zadeklarowana tabela nie posiada wierszy.");
                                                 }
                                             }
                                             else // jeśli brak jest tabeli opisującej pomieszczenia
                                             {
-                                                kwLokal.OpisPomieszczenPrzynaleznych.Add(new OpisPomieszczenPrzynaleznychStruct("- - -", "- - -", "- - -")); 
+                                                kwLokal.OpisPomieszczenPrzynaleznych.Add(new OpisPomieszczenPrzynaleznychStruct("- - -", "- - -", "- - -", "- - -")); 
                                                 KwLog.Add("Podrubryka 1.4.4 - Lokal;7. Opis pomieszczeń przynależnych;Atrybut nie jest zbudowany w postaci tabeli: " + cells[i + 1].InnerText);
                                             }
 
                                         }
                                         else // jeśli liczba komórek jest inna niż oczekiwana przyjmowana wartość domyślna i zapis raportu błędów
                                         {
-                                            kwLokal.OpisPomieszczenPrzynaleznych.Add(new OpisPomieszczenPrzynaleznychStruct("- - -", "- - -", "- - -"));
+                                            kwLokal.OpisPomieszczenPrzynaleznych.Add(new OpisPomieszczenPrzynaleznychStruct("- - -", "- - -", "- - -", "- - -"));
                                             KwLog.Add("Podrubryka 1.4.4 - Lokal;7. Opis pomieszczeń przynależnych;Niezgodna liczba kolumn. Oczekiwana: 2, jest: " + cells.Count);
                                         }
 

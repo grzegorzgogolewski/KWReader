@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using KWTools;
 using OfficeOpenXml;
+using Tools;
 
 namespace KWReader
 {
@@ -12,6 +13,7 @@ namespace KWReader
     {
         static void Main(string[] args)
         {
+
             if (args.Length < 1)
             {
                 Console.WriteLine("Aplikacja do pozyskiwania danych z plików *.html dla KW");
@@ -20,6 +22,48 @@ namespace KWReader
                 Console.WriteLine("Wciśnij dowolny klawisz...");
                 Console.ReadKey();
                 return;
+            }
+
+            LokalSlowniki lokalSlowniki = new LokalSlowniki();
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(Funkcje.GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleIzbyTak.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) lokalSlowniki.RodzajIzbaTak.Add(iniFile.ReadLine());
+            }
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(Funkcje.GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleIzbyNie.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) lokalSlowniki.RodzajIzbaNie.Add(iniFile.ReadLine());
+            }
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(Funkcje.GetExecutingDirectoryName() + "\\Konfiguracja\\LokalePiwnice.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) lokalSlowniki.RodzajPiwnica.Add(iniFile.ReadLine());
+            }
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(Funkcje.GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleGaraz.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) lokalSlowniki.RodzajGaraz.Add(iniFile.ReadLine());
+            }
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(Funkcje.GetExecutingDirectoryName() + "\\Konfiguracja\\LokalePostoj.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) lokalSlowniki.RodzajPostoj.Add(iniFile.ReadLine());
+            }
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(Funkcje.GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleStrych.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) lokalSlowniki.RodzajStrych.Add(iniFile.ReadLine());
+            }
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(Funkcje.GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleKomorka.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) lokalSlowniki.RodzajKomorka.Add(iniFile.ReadLine());
+            }
+
+            using (StreamReader iniFile = new StreamReader(new FileStream(Funkcje.GetExecutingDirectoryName() + "\\Konfiguracja\\LokaleInne.txt", FileMode.Open), Encoding.UTF8))
+            {
+                while (iniFile.Peek() >= 0) lokalSlowniki.RodzajInne.Add(iniFile.ReadLine());
             }
 
             List<KwFromHtml> listaKw = new List<KwFromHtml>();
@@ -44,7 +88,7 @@ namespace KWReader
 
                 StreamReader htmlFile = new StreamReader(new FileStream(file, FileMode.Open), Encoding.UTF8);
 
-                KwFromHtml kw = new KwFromHtml(htmlFile.ReadToEnd());
+                KwFromHtml kw = new KwFromHtml(htmlFile.ReadToEnd(), lokalSlowniki);
             
                 htmlFile.Close();
 
@@ -86,14 +130,17 @@ namespace KWReader
 
             Console.WriteLine("Zapisywanie danych o {0} księgach wieczystych...", fileEntries.Length);
 
+            if (!Directory.Exists(args[0].TrimEnd('\\') + "\\wynik")) Directory.CreateDirectory(args[0].TrimEnd('\\') + "\\wynik");
+
             FileInfo xlsFile = new FileInfo(args[0].TrimEnd('\\') + "\\wynik\\KW.xlsx");
+
             if (xlsFile.Exists)
             {
                 try
                 {
                     xlsFile.Delete();
                 }
-                catch (IOException e)
+                catch (IOException)
                 {
                     Console.WriteLine("Zamknij plik z KW!");
                     Console.ReadKey();
@@ -184,15 +231,21 @@ namespace KWReader
             xlsSheetLokale.Cells[1, 14].Value = "LiczbaIzb";
             xlsSheetLokale.Cells[1, 15].Value = "OpisPomPrzyn";
             xlsSheetLokale.Cells[1, 16].Value = "Piwnica";
-            xlsSheetLokale.Cells[1, 17].Value = "Garaz";
-            xlsSheetLokale.Cells[1, 18].Value = "Postoj";
-            xlsSheetLokale.Cells[1, 19].Value = "Strych";
-            xlsSheetLokale.Cells[1, 20].Value = "Komorka";
-            xlsSheetLokale.Cells[1, 21].Value = "Inne";
-            xlsSheetLokale.Cells[1, 22].Value = "Kondygnacja";
-            xlsSheetLokale.Cells[1, 23].Value = "Nieruchomosc";
-            xlsSheetLokale.Cells[1, 24].Value = "Odrebnosc";  
-            xlsSheetLokale.Cells[1, 25].Value = "PowObszaru";
+            xlsSheetLokale.Cells[1, 17].Value = "PiwnicaPow";
+            xlsSheetLokale.Cells[1, 18].Value = "Garaz";
+            xlsSheetLokale.Cells[1, 19].Value = "GarazPow";
+            xlsSheetLokale.Cells[1, 20].Value = "Postoj";
+            xlsSheetLokale.Cells[1, 21].Value = "PostojPow";
+            xlsSheetLokale.Cells[1, 22].Value = "Strych";
+            xlsSheetLokale.Cells[1, 23].Value = "StrychPow";
+            xlsSheetLokale.Cells[1, 24].Value = "Komorka";
+            xlsSheetLokale.Cells[1, 25].Value = "KomorkaPow";
+            xlsSheetLokale.Cells[1, 26].Value = "Inne";
+            xlsSheetLokale.Cells[1, 27].Value = "InnePow";
+            xlsSheetLokale.Cells[1, 28].Value = "Kondygnacja";
+            xlsSheetLokale.Cells[1, 29].Value = "Nieruchomosc";
+            xlsSheetLokale.Cells[1, 30].Value = "Odrebnosc";  
+            xlsSheetLokale.Cells[1, 31].Value = "PowObszaru";
             
             int dzialkaCounter = 2;
             int budynekCounter = 2;
@@ -312,16 +365,22 @@ namespace KWReader
                     xlsSheetLokale.Cells[lokalCounter, 14].Value = lokal.LiczbaIzb;
                     xlsSheetLokale.Cells[lokalCounter, 15].Value = lokal.GetOpisPomieszczenPrzynaleznych();
                     xlsSheetLokale.Cells[lokalCounter, 16].Value = lokal.GetOpisPomieszczenPrzynaleznychPiwnica();
-                    xlsSheetLokale.Cells[lokalCounter, 17].Value = lokal.GetOpisPomieszczenPrzynaleznychGaraz();
-                    xlsSheetLokale.Cells[lokalCounter, 18].Value = lokal.GetOpisPomieszczenPrzynaleznychPostoj();
-                    xlsSheetLokale.Cells[lokalCounter, 19].Value = lokal.GetOpisPomieszczenPrzynaleznychStrych();
-                    xlsSheetLokale.Cells[lokalCounter, 20].Value = lokal.GetOpisPomieszczenPrzynaleznychKomorka();
-                    xlsSheetLokale.Cells[lokalCounter, 21].Value = lokal.GetOpisPomieszczenPrzynaleznychInne();
-                    xlsSheetLokale.Cells[lokalCounter, 22].Value = lokal.Kondygnacja;
-                    xlsSheetLokale.Cells[lokalCounter, 23].Value = lokal.Nieruchomosc;
-                    xlsSheetLokale.Cells[lokalCounter, 24].Value = lokal.Odrebnosc;
+                    xlsSheetLokale.Cells[lokalCounter, 17].Value = lokal.GetOpisPomieszczenPrzynaleznychPiwnicaPow();
+                    xlsSheetLokale.Cells[lokalCounter, 18].Value = lokal.GetOpisPomieszczenPrzynaleznychGaraz();
+                    xlsSheetLokale.Cells[lokalCounter, 19].Value = lokal.GetOpisPomieszczenPrzynaleznychGarazPow();
+                    xlsSheetLokale.Cells[lokalCounter, 20].Value = lokal.GetOpisPomieszczenPrzynaleznychPostoj();
+                    xlsSheetLokale.Cells[lokalCounter, 21].Value = lokal.GetOpisPomieszczenPrzynaleznychPostojPow();
+                    xlsSheetLokale.Cells[lokalCounter, 22].Value = lokal.GetOpisPomieszczenPrzynaleznychStrych();
+                    xlsSheetLokale.Cells[lokalCounter, 23].Value = lokal.GetOpisPomieszczenPrzynaleznychStrychPow();
+                    xlsSheetLokale.Cells[lokalCounter, 24].Value = lokal.GetOpisPomieszczenPrzynaleznychKomorka();
+                    xlsSheetLokale.Cells[lokalCounter, 25].Value = lokal.GetOpisPomieszczenPrzynaleznychKomorkaPow();
+                    xlsSheetLokale.Cells[lokalCounter, 26].Value = lokal.GetOpisPomieszczenPrzynaleznychInne();
+                    xlsSheetLokale.Cells[lokalCounter, 27].Value = lokal.GetOpisPomieszczenPrzynaleznychInnePow();
+                    xlsSheetLokale.Cells[lokalCounter, 28].Value = lokal.Kondygnacja;
+                    xlsSheetLokale.Cells[lokalCounter, 29].Value = lokal.Nieruchomosc;
+                    xlsSheetLokale.Cells[lokalCounter, 30].Value = lokal.Odrebnosc;
 
-                    xlsSheetLokale.Cells[lokalCounter, 25].Value = kw.KwObszar.ObszarHa;
+                    xlsSheetLokale.Cells[lokalCounter, 31].Value = kw.KwObszar.ObszarHa;
 
                     lokalCounter++;
                 }
@@ -336,10 +395,14 @@ namespace KWReader
             ExcelWorksheet xlsSheetLokaleIzby = xlsWorkbook.Workbook.Worksheets.Add("LokaleIzby");
 
             xlsSheetLokaleIzby.Cells[1, 1].Value = "RodzajIzby";
+            xlsSheetLokaleIzby.Cells[1, 2].Value = "CzyIzba";
 
             for (int i = 0; i < lokalRodzajeIzb.Count; i++)
             {
                 xlsSheetLokaleIzby.Cells[i + 2, 1].Value = lokalRodzajeIzb[i];
+
+                if (lokalSlowniki.RodzajIzbaTak.Exists(x => x == lokalRodzajeIzb[i])) xlsSheetLokaleIzby.Cells[i + 2, 2].Value = "TAK";
+                if (lokalSlowniki.RodzajIzbaNie.Exists(x => x == lokalRodzajeIzb[i])) xlsSheetLokaleIzby.Cells[i + 2, 2].Value = "NIE";
             }
 
             // ------------------------------------------------------------------------------------
@@ -349,11 +412,19 @@ namespace KWReader
 
             ExcelWorksheet xlsSheetLokalePomieszczenia = xlsWorkbook.Workbook.Worksheets.Add("LokalePomieszczenia");
 
-            xlsSheetLokalePomieszczenia.Cells[1, 1].Value = "RodzajPomieszczenia";
+            xlsSheetLokalePomieszczenia.Cells[1, 1].Value = "NazwaPomieszczenia";
+            xlsSheetLokalePomieszczenia.Cells[1, 2].Value = "RodzajPomieszczenia";
 
             for (int i = 0; i < lokalRodzajePomieszczen.Count; i++)
             {
                 xlsSheetLokalePomieszczenia.Cells[i + 2, 1].Value = lokalRodzajePomieszczen[i];
+
+                if (lokalSlowniki.RodzajPiwnica.Exists(x => x == lokalRodzajePomieszczen[i])) xlsSheetLokalePomieszczenia.Cells[i + 2, 2].Value = "PIWNICA";
+                if (lokalSlowniki.RodzajGaraz.Exists(x => x == lokalRodzajePomieszczen[i])) xlsSheetLokalePomieszczenia.Cells[i + 2, 2].Value = "GARAZ";
+                if (lokalSlowniki.RodzajPostoj.Exists(x => x == lokalRodzajePomieszczen[i])) xlsSheetLokalePomieszczenia.Cells[i + 2, 2].Value = "POSTOJOWE";
+                if (lokalSlowniki.RodzajStrych.Exists(x => x == lokalRodzajePomieszczen[i])) xlsSheetLokalePomieszczenia.Cells[i + 2, 2].Value = "STRYCH";
+                if (lokalSlowniki.RodzajKomorka.Exists(x => x == lokalRodzajePomieszczen[i])) xlsSheetLokalePomieszczenia.Cells[i + 2, 2].Value = "KOMORKA";
+                if (lokalSlowniki.RodzajInne.Exists(x => x == lokalRodzajePomieszczen[i])) xlsSheetLokalePomieszczenia.Cells[i + 2, 2].Value = "INNE";
             }
             
             // ------------------------------------------------------------------------------------
@@ -384,7 +455,7 @@ namespace KWReader
 
             Console.WriteLine("Formatowanie arkusza lokali...");
 
-            xlsSheetLokale.Cells["A1:Y" + Convert.ToString(lokalCounter - 1)].AutoFilter = true;
+            xlsSheetLokale.Cells["A1:AE" + Convert.ToString(lokalCounter - 1)].AutoFilter = true;
             xlsSheetLokale.View.FreezePanes(2, 2);
             xlsSheetLokale.Cells.Style.Font.Size = 10;
             xlsSheetLokale.Cells.AutoFitColumns(0);
@@ -392,22 +463,22 @@ namespace KWReader
             xlsSheetLokale.Column(13).Width = 30;
             xlsSheetLokale.Column(15).Width = 30;
             xlsSheetLokale.Column(16).Width = 30;
-            xlsSheetLokale.Column(17).Width = 30;
             xlsSheetLokale.Column(18).Width = 30;
-            xlsSheetLokale.Column(19).Width = 30;
             xlsSheetLokale.Column(20).Width = 30;
-            xlsSheetLokale.Column(21).Width = 30;
+            xlsSheetLokale.Column(22).Width = 30;
+            xlsSheetLokale.Column(24).Width = 30;
+            xlsSheetLokale.Column(26).Width = 30;
 
             Console.WriteLine("Formatowanie arkusza izb lokali...");
 
-            xlsSheetLokaleIzby.Cells["A1:A" + Convert.ToString(lokalRodzajeIzb.Count + 1)].AutoFilter = true;
+            xlsSheetLokaleIzby.Cells["A1:B" + Convert.ToString(lokalRodzajeIzb.Count + 1)].AutoFilter = true;
             xlsSheetLokaleIzby.View.FreezePanes(2, 2);
             xlsSheetLokaleIzby.Cells.Style.Font.Size = 10;
             xlsSheetLokaleIzby.Cells.AutoFitColumns(0);
 
             Console.WriteLine("Formatowanie arkusza pomieszczeń przynaleznych do lokali...");
 
-            xlsSheetLokalePomieszczenia.Cells["A1:A" + Convert.ToString(lokalRodzajePomieszczen.Count + 1)].AutoFilter = true;
+            xlsSheetLokalePomieszczenia.Cells["A1:B" + Convert.ToString(lokalRodzajePomieszczen.Count + 1)].AutoFilter = true;
             xlsSheetLokalePomieszczenia.View.FreezePanes(2, 2);
             xlsSheetLokalePomieszczenia.Cells.Style.Font.Size = 10;
             xlsSheetLokalePomieszczenia.Cells.AutoFitColumns(0);
