@@ -47,6 +47,7 @@
     <Compile Include="Budynek.cs" />
     <Compile Include="Dzialka.cs" />
     <Compile Include="InformacjePodstawowe.cs" />
+    <Compile Include="Komentarz.cs" />
     <Compile Include="KWFromHTML.cs" />
     <Compile Include="Lokal.cs" />
     <Compile Include="LokalSlowniki.cs" />

@@ -25,6 +25,7 @@ namespace KWTools
         public List<Budynek> KwBudynekList = new List<Budynek>();
         public List<Lokal> KwLokalList = new List<Lokal>();
         public Obszar KwObszar = new Obszar();
+        public Komentarz KwKomentarz19 = new Komentarz();
 
         /// <summary>
         /// lista przechowująca błędy wychwycone podczas przetwarzania księgi wieczystej
@@ -914,28 +915,54 @@ namespace KWTools
                                                             if (htmlOpisPomieszczenPrzynaleznychCells[1].InnerText != "A: rodzaj pomieszczenia") throw new Exception();
                                                             rodzajPomieszczenia = htmlOpisPomieszczenPrzynaleznychCells[3].InnerText;
 
-                                                            string pattern = @"O POW\.\s*(\d+)(\.?|,?)(\d*)\s*M2";
-
-                                                            if (Regex.IsMatch(rodzajPomieszczenia, pattern))
+                                                            if (Regex.IsMatch(rodzajPomieszczenia, @"O POW\.\s*(\d+)(\.?|,?)(\d*)\s*M2"))                       // _O POW.___M2
                                                             {
                                                                 int start = rodzajPomieszczenia.IndexOf("O POW.", StringComparison.Ordinal) + 6;
-                                                                int koniec = rodzajPomieszczenia.IndexOf("M2", StringComparison.Ordinal);
+                                                                int koniec = rodzajPomieszczenia.IndexOf("M2", start, StringComparison.Ordinal);
                                                                 string powierzchnia = rodzajPomieszczenia.Substring(start, koniec - start).Replace(",",".");
 
                                                                 powierzchniaPomieszczenia = $"{Convert.ToDouble(powierzchnia):0.00}";
-                                                            }
-
-                                                            pattern = @"O POWIERZCHNI\s*(\d+)(\.?|,?)(\d*)\s*M2";
-
-                                                            if (Regex.IsMatch(rodzajPomieszczenia, pattern))
+                                                            } 
+                                                            else if (Regex.IsMatch(rodzajPomieszczenia, @"O POWIERZCHNI\s*(\d+)(\.?|,?)(\d*)\s*M2"))            // _O POWIERZCHNI___M2
                                                             {
                                                                 int start = rodzajPomieszczenia.IndexOf("O POWIERZCHNI", StringComparison.Ordinal) + 13;
-                                                                int koniec = rodzajPomieszczenia.IndexOf("M2", StringComparison.Ordinal);
+                                                                int koniec = rodzajPomieszczenia.IndexOf("M2", start, StringComparison.Ordinal);
                                                                 string powierzchnia = rodzajPomieszczenia.Substring(start, koniec - start).Replace(",",".");
 
                                                                 powierzchniaPomieszczenia = $"{Convert.ToDouble(powierzchnia):0.00}";
                                                             }
+                                                            else if (Regex.IsMatch(rodzajPomieszczenia, @"O POW\.\s*(\d+)(\.?|,?)(\d*)\s*M 2"))                 // _O POW.___M 2
+                                                            {
+                                                                int start = rodzajPomieszczenia.IndexOf("O POW.", StringComparison.Ordinal) + 6;
+                                                                int koniec = rodzajPomieszczenia.IndexOf("M 2", start, StringComparison.Ordinal);
+                                                                string powierzchnia = rodzajPomieszczenia.Substring(start, koniec - start).Replace(",",".");
 
+                                                                powierzchniaPomieszczenia = $"{Convert.ToDouble(powierzchnia):0.00}";
+                                                            } 
+                                                            else if (Regex.IsMatch(rodzajPomieszczenia, @"O POWIERZCHNI\s*(\d+)(\.?|,?)(\d*)\s*M 2"))           // _O POWIERZCHNI___M 2
+                                                            {
+                                                                int start = rodzajPomieszczenia.IndexOf("O POWIERZCHNI", StringComparison.Ordinal) + 13;
+                                                                int koniec = rodzajPomieszczenia.IndexOf("M 2", start, StringComparison.Ordinal);
+                                                                string powierzchnia = rodzajPomieszczenia.Substring(start, koniec - start).Replace(",",".");
+
+                                                                powierzchniaPomieszczenia = $"{Convert.ToDouble(powierzchnia):0.00}";
+                                                            }
+                                                            else if (Regex.IsMatch(rodzajPomieszczenia, @" POW\.\s*(\d+)(\.?|,?)(\d*)\s*M2"))                   // _ POW.___M2
+                                                            {
+                                                                int start = rodzajPomieszczenia.IndexOf(" POW.", StringComparison.Ordinal) + 5;
+                                                                int koniec = rodzajPomieszczenia.IndexOf("M2", start, StringComparison.Ordinal);
+                                                                string powierzchnia = rodzajPomieszczenia.Substring(start, koniec - start).Replace(",",".");
+
+                                                                powierzchniaPomieszczenia = $"{Convert.ToDouble(powierzchnia):0.00}";
+                                                            } 
+                                                            else if (Regex.IsMatch(rodzajPomieszczenia, @"O POW\s*(\d+)(\.?|,?)(\d*)\s*M2"))                    // _O POW ___M2
+                                                            {
+                                                                int start = rodzajPomieszczenia.IndexOf("O POW", StringComparison.Ordinal) + 5;
+                                                                int koniec = rodzajPomieszczenia.IndexOf("M2", start, StringComparison.Ordinal);
+                                                                string powierzchnia = rodzajPomieszczenia.Substring(start, koniec - start).Replace(",",".");
+
+                                                                powierzchniaPomieszczenia = $"{Convert.ToDouble(powierzchnia):0.00}";
+                                                            } 
                                                         }
                                                         else
                                                         {
@@ -1085,6 +1112,30 @@ namespace KWTools
                     }
                 }
 
+                // --------------------------------------------------------------------------------
+                // Rubryka 1.9 - Komentarz
+                // --------------------------------------------------------------------------------
+
+                if (tableNode.InnerText.IndexOf("Rubryka 1.9 - Komentarz", StringComparison.Ordinal) > 0)
+                {
+                    // przetwórz wszystkie wiersze w tabeli
+                    HtmlNodeCollection rows = tableNode.SelectNodes("tr");
+
+                    // jeśli dane komentarza zapisane są w postaci tabeli to musi ona posiadać 5 wierszy
+                    if (rows.Count != 5)
+                    {
+                        KwKomentarz19.Wpis = "- - -";
+                        KwKomentarz19.NumerWpisu = "- - -";
+                        KwLog.Add("Rubryka 1.9 - Komentarz;;Brak informacji o komentarzu, tabela nie ma właściwej liczby wierszy. Jest: " + rows.Count);
+                    } 
+                    else 
+                    {
+                        KwKomentarz19.Wpis = rows[3].SelectNodes("td")[2].InnerText;
+                        KwKomentarz19.NumerWpisu = rows[4].SelectNodes("td")[2].InnerText;
+                        
+                    }
+
+                }
 
                 // --------------------------------------------------------------------------------
                 // Rubryka 2.2 - Właściciel
