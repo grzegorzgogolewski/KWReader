@@ -42,6 +42,7 @@ namespace KWTools
         public string PrzeznaczenieLokalu;
         public List<OpisLokaluStruct> OpisLokalu = new List<OpisLokaluStruct>();
         public int LiczbaIzb = 0;
+
         public List<OpisPomieszczenPrzynaleznychStruct> OpisPomieszczenPrzynaleznych = new List<OpisPomieszczenPrzynaleznychStruct>();
         public List<OpisPomieszczenPrzynaleznychStruct> OpisPomieszczenPrzynaleznychPiwnica = new List<OpisPomieszczenPrzynaleznychStruct>();
         public List<OpisPomieszczenPrzynaleznychStruct> OpisPomieszczenPrzynaleznychGaraz = new List<OpisPomieszczenPrzynaleznychStruct>();
