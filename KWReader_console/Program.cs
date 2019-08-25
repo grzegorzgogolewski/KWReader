@@ -505,7 +505,7 @@ namespace KWReader
             outputFile.Close();
             // ------------------------------------------------------------------------------------
 
-            Console.WriteLine("Gotowe!");
+            Console.WriteLine(@"Gotowe!");
             Console.ReadKey();
 
         }
